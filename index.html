@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StorePix Pro Cloud</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0f19">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="StorePix">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg-color,#0b0f19);color:var(--text-color,#f8fafc);padding-bottom:90px;transition:background .3s,color .3s}
@@ -434,6 +441,7 @@ body.dark-theme{--bg-color:#0b0f19;--card-bg:rgba(30,41,59,.75);--text-color:#f8
   </div>
   <div class="settings-card"><div class="settings-card-title">Preferences</div>
     <div class="settings-menu-item" onclick="openSecurityScreen()"><span>🔒 Security & Password</span><span>›</span></div>
+    <div class="settings-menu-item" onclick="installApp()"><span>📲 App install karein (Home screen)</span><span>›</span></div>
     <div class="settings-menu-item" onclick="openAppearanceScreen()"><span>🎨 Appearance & Themes</span><span>›</span></div></div>
   <button class="btn" style="background:#ef4444;color:#fff;padding:16px" onclick="logoutUser()">Logout</button>
 </div>
@@ -483,6 +491,19 @@ let inventoryStock=Object.create(null),productsById={},customers=Object.create(n
 let transactionHistory=[],staffMembers=[],daysData={};
 let cartItems={},currentCartTotal=0,currentSubtotal=0,selectedPaymentMethod='Cash',selectedOnlineSub='Card / Bank';
 let editingProduct=null,lastReceiptText='',scanStream=null,scanTimer=null;
+
+/* ================= APP INSTALL (PWA) ================= */
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e});
+window.addEventListener('appinstalled',()=>{deferredInstall=null;toast('App install ho gayi ✓')});
+async function installApp(){
+  if(window.matchMedia('(display-mode: standalone)').matches)return alert('Aap pehle se app me hi hain ✓');
+  if(deferredInstall){deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;return}
+  alert('Chrome ke teen dots (⋮) dabayein, phir "Install app" ya "Add to Home screen" chunein.');
+}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW',e)));
+}
 
 /* ================= HELPERS ================= */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
