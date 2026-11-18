@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MultiShop</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0f19">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MultiShop">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg-color,#0b0f19);color:var(--text-color,#f8fafc);padding-bottom:90px;transition:background .3s,color .3s}
+body.light-theme{--bg-color:#f8fafc;--card-bg:rgba(255,255,255,.95);--text-color:#0f172a;--sub-text:#64748b;--border-color:#e2e8f0;--nav-bg:rgba(255,255,255,.97);--shadow:0 12px 35px rgba(0,0,0,.06)}
+body.dark-theme{--bg-color:#0b0f19;--card-bg:rgba(30,41,59,.75);--text-color:#f8fafc;--sub-text:#94a3b8;--border-color:rgba(255,255,255,.08);--nav-bg:rgba(30,41,59,.92);--shadow:0 12px 35px rgba(0,0,0,.45)}
+#login-screen{background:radial-gradient(circle at center,#1e1b4b 0%,#0f172a 100%);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.container{background:rgba(30,41,59,.75);backdrop-filter:blur(20px);width:100%;max-width:390px;padding:35px;border-radius:28px;border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.logo{text-align:center;margin-bottom:25px}.logo h1{color:#38bdf8;font-size:34px;font-weight:900}.logo p{color:#94a3b8;font-size:13px;margin-top:6px}
+.form-group{margin-bottom:18px}.form-group label{display:block;margin-bottom:8px;color:#cbd5e1;font-size:13px;font-weight:600}
+.input-container{position:relative;display:flex;align-items:center}
+.form-group input,.input-container input{width:100%;padding:14px 42px 14px 16px;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;font-size:15px;outline:none}
+.form-group input:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,.2)}
+.eye-btn{position:absolute;right:14px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px}
+.btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--brand-primary,#0284c7),var(--brand-accent,#38bdf8));border:none;border-radius:14px;color:#0f172a;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 25px rgba(56,189,248,.3);transition:transform .2s}
+.btn:active{transform:scale(.96)}
+.btn-secondary{background:rgba(51,65,85,.8);color:#f8fafc;margin-top:12px;box-shadow:none}
+.btn-sm{width:auto;padding:9px 14px;font-size:13px;border-radius:10px;box-shadow:none}
+#dashboard-screen{display:none;min-height:100vh}
+.navbar{background:var(--nav-bg);backdrop-filter:blur(16px);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:900}
+.navbar-left h2{font-size:19px;font-weight:800}.navbar-left span{font-size:11px;color:var(--brand-accent,#38bdf8);font-weight:700}
+.navbar-right{display:flex;gap:10px}
+.icon-btn{background:var(--card-bg);border:1px solid var(--border-color);color:var(--text-color);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer}
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:var(--nav-bg);backdrop-filter:blur(20px);display:flex;justify-content:flex-start;padding:10px 6px;border-top:1px solid var(--border-color);z-index:1000;overflow-x:auto;gap:2px}
+.bottom-nav button{background:none;border:none;color:var(--sub-text);font-size:12px;font-weight:600;cursor:pointer;padding:8px 12px;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:4px;white-space:nowrap;flex:1 0 auto}
+.bottom-nav button.active{color:var(--brand-accent,#38bdf8);background:rgba(56,189,248,.15);font-weight:800}
+.content{padding:18px}
+.card{background:var(--card-bg);backdrop-filter:blur(16px);padding:22px;border-radius:22px;border:1px solid var(--border-color);margin-bottom:16px;box-shadow:var(--shadow)}
+.card h3{margin-bottom:12px;font-size:20px;font-weight:800}.card p{color:var(--sub-text);font-size:14px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+.stat-box{background:var(--card-bg);padding:16px;border-radius:18px;border:1px solid var(--border-color)}
+.stat-box .label{display:block;font-size:11px;color:var(--sub-text);font-weight:700;margin-bottom:6px}
+.stat-box .amount{font-size:20px;font-weight:900}
+.input-box,select.input-box{width:100%;padding:14px 16px;margin-bottom:12px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;color:var(--text-color);font-size:16px;outline:none}
+.input-box:focus{border-color:var(--brand-accent,#38bdf8)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.list-item{padding:14px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;margin-top:10px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.list-item small{color:var(--sub-text)}
+.del-btn{background:#ef4444;color:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700}
+.edit-btn{background:#3b82f6;color:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700}
+.ok-btn{background:#10b981;color:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700}
+.warn-btn{background:#f59e0b;color:#0f172a;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700}
+.low-stock-badge{background:#ef4444;color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;margin-left:6px;display:inline-block}
+.tag{font-size:11px;color:#0f172a;padding:2px 6px;border-radius:4px;font-weight:700}
+.pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.pos-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:16px;position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:140px;cursor:pointer;box-shadow:var(--shadow)}
+.pos-card:active{transform:scale(.97)}
+.pos-card-letter{position:absolute;top:10px;right:14px;font-size:40px;font-weight:900;color:var(--sub-text);opacity:.25}
+.pos-card-title{font-size:17px;font-weight:800;margin-bottom:4px;word-break:break-word}
+.pos-card-price{font-size:17px;font-weight:800;color:var(--brand-accent,#38bdf8);margin-bottom:4px}
+.pos-card-left{font-size:13px;color:var(--sub-text);font-weight:600}
+.pos-add-btn{background:var(--brand-accent,#38bdf8);color:#0f172a;border:none;width:40px;height:40px;border-radius:50%;font-size:22px;font-weight:700;cursor:pointer;align-self:flex-end;margin-top:8px}
+.search-row{display:flex;gap:8px}.search-row .input-box{flex:1}
+.scan-btn{background:var(--brand-accent,#38bdf8);color:#0f172a;border:none;border-radius:14px;width:54px;height:54px;font-size:22px;cursor:pointer;margin-bottom:12px}
+#floating-cart{position:fixed;bottom:95px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:14px 28px;border-radius:35px;display:flex;gap:15px;z-index:999;font-weight:800;font-size:16px;opacity:0;transition:.35s;cursor:pointer;box-shadow:0 15px 35px rgba(16,185,129,.4);pointer-events:none}
+#floating-cart.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+.cart-badge{background:#ef4444;color:#fff;font-size:12px;padding:3px 9px;border-radius:12px;font-weight:800}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.8);display:none;backdrop-filter:blur(8px)}
+#cart-modal{z-index:2000;justify-content:center;align-items:flex-end}
+.cart-modal-content{background:#fff;color:#1e293b;width:100%;max-width:500px;max-height:94vh;border-top-left-radius:30px;border-top-right-radius:30px;padding:22px 18px;overflow-y:auto}
+.cart-modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:21px;font-weight:800;color:#0f172a}
+.cart-close-btn{background:#f1f5f9;border:none;color:#64748b;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer}
+.cart-item-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:14px;margin-bottom:12px}
+.cart-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cart-item-title{font-weight:800;font-size:17px;color:#0f172a}.cart-item-price-sub{font-size:13px;color:#2563eb;font-weight:700}
+.cart-trash-btn{background:#fef2f2;color:#ef4444;border:none;width:38px;height:38px;border-radius:12px;cursor:pointer;font-size:16px}
+.cart-qty-row{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:10px}
+.qty-ctrl-group{display:flex;align-items:center;gap:14px}
+.qty-btn-circle{background:#eff6ff;color:#2563eb;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;font-weight:700;cursor:pointer}
+.summary-block,.payment-section-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:#334155;font-size:14px}
+.sum-total{font-size:30px;font-weight:900;color:#2563eb}
+.payment-label{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:10px;display:block}
+.pay-methods-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.pay-method-tab{padding:11px 4px;background:#fff;border:1px solid #cbd5e1;color:#334155;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;text-align:center}
+.pay-method-tab.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.light-input{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font-size:18px;font-weight:800;color:#0f172a;background:#fff;outline:none;margin-bottom:10px}
+.quick-cash-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.quick-cash-btn{background:#fff;border:1px solid #cbd5e1;color:#1e293b;padding:10px 2px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer}
+.quick-cash-btn.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.change-display-box{background:#dcfce7;border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.complete-sale-green-btn{width:100%;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:18px;padding:17px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 10px 25px rgba(16,185,129,.4);margin-top:6px}
+#receipt-modal{z-index:6000;justify-content:center;align-items:center;padding:16px}
+.receipt-card{background:#fff;color:#0f172a;width:100%;max-width:340px;max-height:92vh;overflow-y:auto;padding:22px;border-radius:20px;font-family:'Courier New',monospace;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.receipt-card *{font-family:'Courier New',monospace}
+.receipt-header{text-align:center;border-bottom:2px dashed #cbd5e1;padding-bottom:10px;margin-bottom:10px}
+.receipt-items-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
+.receipt-items-table th,.receipt-items-table td{padding:3px 0;text-align:left}.receipt-items-table th{border-bottom:1px solid #cbd5e1}
+.rec-line{display:flex;justify-content:space-between;font-size:13px;margin-top:3px}
+.receipt-footer{border-top:2px dashed #cbd5e1;padding-top:10px;text-align:center;font-size:12px;color:#64748b;margin-top:10px}
+#scan-modal{z-index:7000;justify-content:center;align-items:center;flex-direction:column;gap:14px;padding:16px}
+#scan-video{width:100%;max-width:420px;border-radius:20px;background:#000}
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-30px);background:#0f172a;color:#fff;padding:12px 20px;border-radius:14px;z-index:9000;font-size:14px;font-weight:600;opacity:0;transition:.3s;pointer-events:none;border:1px solid rgba(255,255,255,.2);max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.chart{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:10px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.chart-bar{width:100%;background:linear-gradient(180deg,var(--brand-accent,#38bdf8),var(--brand-primary,#0284c7));border-radius:8px 8px 0 0;min-height:3px}
+.chart-val{font-size:10px;color:var(--sub-text);margin-bottom:3px}.chart-lbl{font-size:11px;color:var(--sub-text);margin-top:5px;font-weight:600}
+#settings-section,#security-sub-screen,#appearance-sub-screen{display:none;padding:18px;background:var(--bg-color);min-height:100vh}
+.settings-header{display:flex;align-items:center;gap:15px;background:var(--card-bg);padding:16px;border-radius:18px;border:1px solid var(--border-color);margin-bottom:20px}
+.back-btn{background:none;border:none;color:var(--text-color);font-size:22px;cursor:pointer}
+.settings-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:18px;margin-bottom:16px}
+.settings-card-title{font-size:16px;font-weight:800;margin-bottom:4px}.settings-card-sub{font-size:13px;color:var(--sub-text);margin-bottom:14px}
+.settings-menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg-color);border:1px solid var(--border-color);border-radius:14px;margin-bottom:10px;cursor:pointer;font-size:15px}
+.sec-avatar{width:48px;height:48px;background:var(--brand-accent,#38bdf8);color:#0f172a;font-size:20px;font-weight:900;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.theme-option-card{background:var(--card-bg);border:2px solid var(--border-color);border-radius:18px;padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.theme-option-card.active{border-color:var(--brand-accent,#38bdf8)}
+.radio-circle{width:22px;height:22px;border:2px solid var(--border-color);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.theme-option-card.active .radio-circle{border-color:var(--brand-accent);background:var(--brand-accent);color:#fff}
+.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.color-circle-btn{aspect-ratio:1;border-radius:50%;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff}
+.color-circle-btn.active{border-color:#fff;box-shadow:0 0 15px rgba(255,255,255,.7)}
+@media print{
+  body>*:not(#receipt-modal){display:none!important}
+  #receipt-modal{position:static!important;background:none!important;display:block!important;backdrop-filter:none!important;padding:0!important}
+  .receipt-card{box-shadow:none!important;max-width:100%!important;max-height:none!important;overflow:visible!important}
+  .no-print{display:none!important}
+}
+
+/* ===== ANIMATIONS (sirf transform/opacity: phone par smooth) ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes growBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes navPop{0%{transform:translateY(0)}45%{transform:translateY(-5px)}100%{transform:none}}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes checkPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}100%{box-shadow:0 0 0 18px rgba(16,185,129,0)}}
+.container{animation:popIn .55s cubic-bezier(.2,.8,.2,1) both}
+.logo h1{animation:floatY 3.6s ease-in-out infinite}
+#boot-msg{animation:pulse 1.4s ease-in-out infinite}
+#cfg-warning{animation:fadeUp .5s ease both}
+.form-group{animation:fadeUp .5s ease both}
+.form-group:nth-of-type(2){animation-delay:.08s}
+#dashboard-screen,#settings-section,#security-sub-screen,#appearance-sub-screen{animation:fadeIn .3s ease both}
+#section-dashboard,#section-inventory,#section-sell,#section-purchase,#section-udhaar,#section-staff,#section-mail{animation:fadeUp .35s cubic-bezier(.2,.8,.2,1) both}
+#section-dashboard .stat-box{animation:fadeUp .5s cubic-bezier(.2,.8,.2,1) both}
+#section-dashboard .stat-box:nth-child(1){animation-delay:.04s}
+#section-dashboard .stat-box:nth-child(2){animation-delay:.09s}
+#section-dashboard .stat-box:nth-child(3){animation-delay:.14s}
+#section-dashboard .stat-box:nth-child(4){animation-delay:.19s}
+#section-dashboard .stat-box:nth-child(5){animation-delay:.24s}
+#section-dashboard .stat-box:nth-child(6){animation-delay:.29s}
+#section-dashboard .card:nth-of-type(2){animation:fadeUp .5s .2s cubic-bezier(.2,.8,.2,1) both}
+.chart-bar{transform-origin:bottom;animation:growBar .7s cubic-bezier(.2,.8,.2,1) both}
+.stat-box,.card,.pos-card,.list-item{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.btn,.btn-sm,.del-btn,.edit-btn,.ok-btn,.warn-btn,.qty-btn-circle,.quick-cash-btn,.pay-method-tab,.icon-btn,.scan-btn,.cart-trash-btn,.theme-option-card,.settings-menu-item{transition:transform .15s ease,background-color .2s ease,box-shadow .2s ease,border-color .2s ease}
+.del-btn:active,.edit-btn:active,.ok-btn:active,.warn-btn:active,.qty-btn-circle:active,.quick-cash-btn:active,.pay-method-tab:active,.icon-btn:active,.scan-btn:active,.cart-trash-btn:active,.settings-menu-item:active,.theme-option-card:active{transform:scale(.93)}
+.pos-card:active{transform:scale(.96)}
+.pos-add-btn{transition:transform .15s ease}.pos-add-btn:active{transform:scale(.8) rotate(90deg)}
+@media(hover:hover){
+  .pos-card:hover,.stat-box:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(56,189,248,.15)}
+  .btn:hover{box-shadow:0 10px 30px rgba(56,189,248,.45)}
+}
+.bottom-nav button.active{animation:navPop .35s ease}
+.cart-badge.bump{animation:bump .35s ease}
+#floating-cart.show{animation:ring 1.6s ease-out 1}
+.overlay{animation:fadeIn .25s ease both}
+#cart-modal .cart-modal-content{animation:slideUp .38s cubic-bezier(.2,.8,.2,1) both}
+.receipt-card{animation:popIn .4s cubic-bezier(.2,.8,.2,1) both}
+.cart-item-card{animation:fadeUp .3s ease both}
+.success-check{width:46px;height:46px;margin:0 auto 8px;border-radius:50%;background:#10b981;color:#fff;font-size:26px;font-weight:900;display:flex;align-items:center;justify-content:center;animation:checkPop .5s .15s cubic-bezier(.2,.8,.2,1) both}
+.low-stock-badge{animation:blink 2s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+
+/* ===== V3 AMAZING ANIMATIONS ===== */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shine{to{background-position:300% 0}}
+@keyframes sweep{0%,55%{left:-130%}100%{left:170%}}
+@keyframes orbA{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,90px) scale(1.2)}}
+@keyframes orbB{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-80px,-70px) scale(1.25)}}
+@keyframes borderflow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-9px)}40%,60%{transform:translateX(9px)}}
+@keyframes leave{to{opacity:0;transform:scale(1.07)}}
+@keyframes ripple{to{transform:scale(2.6);opacity:0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes toastbar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes slideInR{from{opacity:0;transform:translateX(46px)}to{opacity:1;transform:none}}
+@keyframes slideInL{from{opacity:0;transform:translateX(-46px)}to{opacity:1;transform:none}}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-10px);opacity:1}}
+#login-screen{position:relative;overflow:hidden}
+#login-screen.leaving{position:fixed;inset:0;z-index:5000;animation:leave .4s ease forwards;pointer-events:none}
+.orbs{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.orbs i{position:absolute;border-radius:50%;will-change:transform}
+.orbs i:nth-child(1){width:400px;height:400px;left:-140px;top:-110px;background:radial-gradient(circle,rgba(56,189,248,.75) 0%,transparent 68%);animation:orbA 14s ease-in-out infinite}
+.orbs i:nth-child(2){width:440px;height:440px;right:-170px;bottom:-130px;background:radial-gradient(circle,rgba(168,85,247,.7) 0%,transparent 68%);animation:orbB 17s ease-in-out infinite}
+.orbs i:nth-child(3){width:280px;height:280px;left:38%;top:58%;background:radial-gradient(circle,rgba(16,185,129,.5) 0%,transparent 68%);animation:orbA 21s ease-in-out infinite reverse}
+.container{position:relative;z-index:1}
+.container::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(120deg,#38bdf8,#a855f7,#10b981,#38bdf8);background-size:300% 300%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:borderflow 6s linear infinite;pointer-events:none;opacity:.85}
+.container.shake{animation:shake .6s cubic-bezier(.36,.07,.19,.97) both}
+.container.err{box-shadow:0 0 0 2px rgba(239,68,68,.55),0 30px 60px rgba(239,68,68,.28)}
+.logo h1{background:linear-gradient(90deg,#38bdf8,#a5f3fc,#c084fc,#38bdf8);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shine 5s linear infinite,floatY 3.6s ease-in-out infinite}
+.dots{display:inline-flex;gap:7px;margin-bottom:8px}
+.dots i{width:10px;height:10px;border-radius:50%;background:#38bdf8;animation:dotBounce 1.2s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.15s;background:#a855f7}
+.dots i:nth-child(3){animation-delay:.3s;background:#10b981}
+.auth-error{display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.55);color:#fecaca;padding:11px 13px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:14px;line-height:1.5}
+.auth-error.show{display:block;animation:fadeUp .3s ease}
+.btn,.btn-sm,.del-btn,.edit-btn,.ok-btn,.warn-btn,.quick-cash-btn,.pay-method-tab,.qty-btn-circle,.complete-sale-green-btn{position:relative;overflow:hidden}
+.btn::after,.complete-sale-green-btn::after{content:'';position:absolute;top:0;left:-130%;width:55%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:sweep 3.4s ease-in-out infinite;pointer-events:none}
+.btn-secondary::after,.btn-sm::after{display:none}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:ripple .6s ease-out forwards;pointer-events:none}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid rgba(15,23,42,.25);border-top-color:#0f172a;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+.btn.loading{pointer-events:none;opacity:.9}
+.btn.loading::after{display:none}
+/* nav pill */
+.bottom-nav{scrollbar-width:none}.bottom-nav::-webkit-scrollbar{display:none}
+.bottom-nav button{position:relative;z-index:1}
+.bottom-nav button.active{background:transparent}
+.nav-pill{position:absolute;top:10px;bottom:10px;left:0;width:0;border-radius:14px;background:rgba(56,189,248,.2);box-shadow:0 0 18px rgba(56,189,248,.25);transition:transform .38s cubic-bezier(.2,.8,.2,1),width .38s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+/* tab direction */
+#dashboard-screen .content>.dirR{animation:slideInR .38s cubic-bezier(.2,.8,.2,1) both}
+#dashboard-screen .content>.dirL{animation:slideInL .38s cubic-bezier(.2,.8,.2,1) both}
+/* lists */
+.item-in{animation:fadeUp .45s cubic-bezier(.2,.8,.2,1) both}
+.item-in:nth-child(1){animation-delay:0s}.item-in:nth-child(2){animation-delay:.04s}.item-in:nth-child(3){animation-delay:.08s}
+.item-in:nth-child(4){animation-delay:.12s}.item-in:nth-child(5){animation-delay:.16s}.item-in:nth-child(6){animation-delay:.2s}
+.item-in:nth-child(7){animation-delay:.24s}.item-in:nth-child(8){animation-delay:.28s}.item-in:nth-child(n+9){animation-delay:.32s}
+.cart-item-card{animation:none}
+.skeleton{height:68px;border-radius:16px;margin-top:10px;background:linear-gradient(90deg,var(--card-bg) 25%,rgba(148,163,184,.2) 50%,var(--card-bg) 75%);background-size:200% 100%;animation:skel 1.3s linear infinite}
+.pos-grid .skeleton{height:140px;margin:0;border-radius:20px}
+/* dashboard polish */
+.stat-box{position:relative;overflow:hidden}
+.stat-box::before{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.18),transparent 70%);pointer-events:none}
+.chart-bar{box-shadow:0 0 16px rgba(56,189,248,.35)}
+/* receipt tick + toast */
+.check-svg{width:68px;height:68px;display:block;margin:0 auto 6px}
+.check-svg .c{fill:none;stroke:#10b981;stroke-width:3;stroke-dasharray:151;stroke-dashoffset:151;animation:draw .6s ease forwards}
+.check-svg .t{fill:none;stroke:#10b981;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .4s .5s ease forwards}
+#toast{overflow:hidden}
+#toast::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--brand-accent,#38bdf8);transform-origin:left;transform:scaleX(0)}
+#toast.show::after{animation:toastbar 2.4s linear forwards}
+.fly{position:fixed;width:28px;height:28px;border-radius:50%;background:var(--brand-accent,#38bdf8);box-shadow:0 0 20px var(--brand-accent,#38bdf8);z-index:9400;pointer-events:none}
+
+/* ===== MultiShop v4: bigger UI + extra animation ===== */
+body{padding-bottom:104px}
+.navbar{padding:16px 20px}.navbar-left h2{font-size:23px;letter-spacing:.2px}.navbar-left span{font-size:12px}
+.icon-btn{width:46px;height:46px;font-size:21px;transition:transform .25s,box-shadow .25s}
+.icon-btn:active{transform:scale(.88) rotate(-8deg)}
+.content{padding:20px}
+.card{padding:26px;border-radius:26px}.card h3{font-size:23px;margin-bottom:14px}.card p{font-size:15px}
+.stats-grid{gap:14px;margin-top:18px}
+.stat-box{padding:22px 18px;border-radius:22px;min-height:118px;transition:transform .25s,box-shadow .25s;animation:popIn .55s cubic-bezier(.2,.9,.3,1.2) both}
+.stat-box:nth-child(2){animation-delay:.06s}.stat-box:nth-child(3){animation-delay:.12s}.stat-box:nth-child(4){animation-delay:.18s}.stat-box:nth-child(5){animation-delay:.24s}.stat-box:nth-child(6){animation-delay:.3s}
+.stat-box:active{transform:scale(.96)}
+.stat-box .label{font-size:12.5px;margin-bottom:10px;letter-spacing:.4px}
+.stat-box .amount{font-size:29px;line-height:1.15}
+.stat-box::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.12),transparent);transform:skewX(-18deg);animation:sweep 5.5s ease-in-out infinite}
+.stat-box:nth-child(even)::after{animation-delay:2.4s}
+.input-box,select.input-box{padding:17px 18px;font-size:17px;border-radius:16px;margin-bottom:14px;transition:border-color .2s,box-shadow .25s,transform .2s}
+.input-box:focus{box-shadow:0 0 0 4px rgba(56,189,248,.2);transform:translateY(-1px)}
+.btn{padding:18px;font-size:17.5px;border-radius:17px}
+.btn-sm{padding:11px 16px;font-size:14px}
+.del-btn,.edit-btn,.ok-btn,.warn-btn{padding:10px 14px;font-size:13px;border-radius:11px}
+.list-item{padding:18px;font-size:15.5px;border-radius:19px;margin-top:12px;transition:transform .2s,box-shadow .25s}
+.list-item:active{transform:scale(.985)}
+.list-item small{font-size:12.5px;line-height:1.6}
+.pos-grid{gap:15px;margin-top:14px}
+.pos-card{min-height:172px;padding:19px;border-radius:24px;transition:transform .22s cubic-bezier(.2,.9,.3,1.3),box-shadow .25s;overflow:hidden}
+.pos-card:active{transform:scale(.95)}
+.pos-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 0%,rgba(56,189,248,.22),transparent 55%);pointer-events:none}
+.pos-card-title{font-size:19.5px}.pos-card-price{font-size:21px}.pos-card-left{font-size:14px}
+.pos-card-letter{font-size:46px}
+.pos-add-btn{width:48px;height:48px;font-size:27px;box-shadow:0 6px 18px rgba(56,189,248,.45);transition:transform .2s}
+.pos-card:active .pos-add-btn{transform:rotate(90deg) scale(1.15)}
+.pos-grid .skeleton{height:172px}
+.scan-btn{width:58px;height:58px;font-size:24px}
+#floating-cart{padding:17px 32px;font-size:18px;bottom:112px}
+#floating-cart.show{animation:cartFloat 2.8s ease-in-out infinite}
+.bottom-nav{padding:12px 8px}
+.bottom-nav button{font-size:14px;padding:11px 15px;border-radius:16px}
+.bottom-nav button.active{animation:navPop .45s cubic-bezier(.2,.9,.3,1.4)}
+.nav-pill{top:12px;bottom:12px;border-radius:16px}
+.cart-modal-header{font-size:23px}
+.settings-menu-item{padding-top:18px;padding-bottom:18px;font-size:16.5px;transition:background .2s,transform .2s}
+.settings-menu-item:active{transform:translateX(4px)}
+.card,.settings-card{animation:fadeUp .5s cubic-bezier(.2,.8,.2,1) both}
+/* welcome screen */
+.container{max-width:410px;padding:38px 32px}
+.logo{margin-bottom:26px}.logo h1{font-size:40px;letter-spacing:.5px}.logo p{font-size:14px}
+.brand-mark{width:84px;height:84px;margin:0 auto 16px;border-radius:26px;background:linear-gradient(135deg,#0284c7,#38bdf8 50%,#a855f7);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 14px 40px rgba(56,189,248,.5);animation:logoFloat 4.5s ease-in-out infinite,logoIn .9s cubic-bezier(.2,.9,.3,1.3) both}
+.brand-mark span{font-size:50px;font-weight:900;color:#fff;font-family:Georgia,'Segoe UI',serif;text-shadow:0 4px 14px rgba(0,0,0,.35)}
+.brand-mark::before,.brand-mark::after{content:'';position:absolute;inset:-6px;border-radius:30px;border:2px solid rgba(56,189,248,.55);animation:ring 3s ease-out infinite}
+.brand-mark::after{animation-delay:1.5s}
+.logo h1{animation:shine 6s linear infinite,fadeUp .8s .15s cubic-bezier(.2,.8,.2,1) both}
+.logo p{animation:fadeUp .8s .3s cubic-bezier(.2,.8,.2,1) both}
+.tagline{text-align:center;color:#cbd5e1;font-size:16px;line-height:1.6;margin-bottom:18px;animation:fadeUp .8s .42s both}
+.feat-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.feat-row span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#e2e8f0;font-size:13px;font-weight:700;padding:8px 13px;border-radius:30px;animation:popIn .6s both}
+.feat-row span:nth-child(1){animation-delay:.55s}.feat-row span:nth-child(2){animation-delay:.68s}.feat-row span:nth-child(3){animation-delay:.81s}
+.btn-start{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;font-size:20px;border-radius:20px;background:linear-gradient(120deg,#0284c7,#38bdf8,#a855f7,#0284c7);background-size:250% 100%;color:#fff;animation:pulseGlow 2.4s ease-in-out infinite,gradMove 5s linear infinite,popIn .7s .9s both;box-shadow:0 12px 34px rgba(56,189,248,.5)}
+.btn-start .arr{font-style:normal;font-size:24px;animation:arrow 1.2s ease-in-out infinite}
+.lang-box{margin-top:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);animation:fadeUp .8s 1.05s both}
+.lang-title{text-align:center;color:#94a3b8;font-size:13px;font-weight:700;margin-bottom:12px}
+.lang-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.lang-chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#e2e8f0;padding:10px 16px;border-radius:30px;font-size:14.5px;font-weight:700;cursor:pointer;transition:transform .2s,background .25s,box-shadow .25s}
+.lang-chip:active{transform:scale(.9)}
+.lang-chip.active{background:linear-gradient(135deg,#0284c7,#38bdf8);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(56,189,248,.5);animation:popIn .4s both}
+.settings-card .lang-chip{background:var(--bg-color);color:var(--text-color);border-color:var(--border-color)}
+.settings-card .lang-chip.active{background:linear-gradient(135deg,#0284c7,#38bdf8);color:#fff}
+.auth-back{background:none;border:none;color:#94a3b8;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:14px;padding:6px 2px}
+.pane-in{animation:paneIn .5s cubic-bezier(.2,.8,.2,1) both}
+.pane-out{animation:paneOut .26s ease forwards}
+.form-group input,.input-container input{font-size:16px;padding:16px 44px 16px 18px}
+.orbs b{position:absolute;bottom:-30px;border-radius:50%;background:rgba(255,255,255,.18);box-shadow:0 0 12px rgba(125,211,252,.5);animation:rise linear infinite}
+body.lang-anim #auth-card,body.lang-anim #dashboard-screen>.content,body.lang-anim #settings-section{animation:langPop .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.7) translateY(14px)}to{opacity:1;transform:none}}
+@keyframes sweep{0%,55%{left:-120%}100%{left:170%}}
+@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-9px) rotate(3deg)}}
+@keyframes logoIn{from{opacity:0;transform:scale(.3) rotate(-30deg)}to{opacity:1}}
+@keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 12px 34px rgba(56,189,248,.45),0 0 0 0 rgba(56,189,248,.45)}50%{box-shadow:0 14px 44px rgba(168,85,247,.55),0 0 0 14px rgba(56,189,248,0)}}
+@keyframes gradMove{0%{background-position:0 0}100%{background-position:250% 0}}
+@keyframes arrow{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+@keyframes paneIn{from{opacity:0;transform:translateY(26px) scale(.96);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@keyframes paneOut{to{opacity:0;transform:translateY(-20px) scale(.95);filter:blur(6px)}}
+@keyframes rise{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translateY(-110vh) scale(1.2);opacity:0}}
+@keyframes navPop{0%{transform:scale(.8)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes cartFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+@keyframes langPop{0%{opacity:.25;transform:scale(.97)}100%{opacity:1;transform:none}}
+/* RTL (Urdu) */
+[dir=rtl] .eye-btn{right:auto;left:14px}
+[dir=rtl] .form-group input,[dir=rtl] .input-container input{padding:16px 18px 16px 44px}
+[dir=rtl] .btn-start .arr,[dir=rtl] .back-btn,[dir=rtl] .settings-menu-item>span:last-child{transform:scaleX(-1)}
+[dir=rtl] .btn-start .arr{animation:none}
+[dir=rtl] .pos-card-letter{right:auto;left:14px}
+[dir=rtl] .pos-add-btn{align-self:flex-start}
+[dir=rtl] .low-stock-badge{margin-left:0;margin-right:6px}
+[dir=rtl] .list-item,[dir=rtl] .card,[dir=rtl] .container{text-align:right}
+[dir=rtl] .logo,[dir=rtl] .tagline,[dir=rtl] .lang-title{text-align:center}
+body.lang-ur *{font-family:'Noto Nastaliq Urdu','Noto Naskh Arabic','Jameel Noor Nastaleeq','Segoe UI',Tahoma,sans-serif}
+body.lang-ur .stat-box .amount,body.lang-ur .brand-mark span{font-family:'Segoe UI',Tahoma,sans-serif}
+body.lang-ur .list-item,body.lang-ur .btn,body.lang-ur .stat-box .label{line-height:1.9}
+@media(prefers-reduced-motion:reduce){.orbs b{display:none}}
+</style>
+</head>
+<body class="dark-theme" style="--brand-primary:#0284c7;--brand-accent:#38bdf8;">
+
+<div id="toast"></div>
+
+<!-- RECEIPT -->
+<div id="receipt-modal" class="overlay">
+  <div class="receipt-card">
+    <div class="receipt-header">
+      <svg class="check-svg" viewBox="0 0 52 52"><circle class="c" cx="26" cy="26" r="24"/><path class="t" d="M14 27l8 8 16-17"/></svg>
+      <h3 id="rec-store-name" style="font-size:18px;font-weight:900">STORE</h3>
+      <p id="rec-datetime" style="font-size:11px"></p>
+      <p id="rec-customer" style="font-size:12px"></p>
+    </div>
+    <table class="receipt-items-table">
+      <thead><tr><th>Item</th><th>Qty</th><th>Sub</th></tr></thead>
+      <tbody id="rec-items-tbody"></tbody>
+    </table>
+    <div id="rec-totals" style="border-top:1px dashed #cbd5e1;padding-top:8px"></div>
+    <div class="receipt-footer"><p>Thank you for shopping!</p><p style="font-size:10px;margin-top:4px">Powered by MultiShop</p></div>
+    <div class="no-print" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+      <button class="btn btn-sm" style="background:#3b82f6;color:#fff" onclick="printReceipt()">🖨️ Print / PDF</button>
+      <button class="btn btn-sm" style="background:#22c55e;color:#fff" onclick="shareReceiptWhatsApp()">💬 WhatsApp</button>
+    </div>
+    <button class="btn no-print" style="margin-top:10px;padding:11px;font-size:14px" onclick="closeReceiptModal()">Done / New Sale</button>
+  </div>
+</div>
+
+<!-- SCANNER -->
+<div id="scan-modal" class="overlay">
+  <video id="scan-video" playsinline muted></video>
+  <p style="color:#fff;font-size:14px">Barcode camera ke saamne rakhein</p>
+  <button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="closeScanner()">Band karein</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="orbs"><i></i><i></i><i></i></div>
+  <div class="container" id="auth-card">
+    <div class="logo"><div class="brand-mark"><span>M</span></div><h1>MultiShop</h1><p>Business Management Portal</p></div>
+    <p id="boot-msg" style="color:#94a3b8;text-align:center"><span class="dots"><i></i><i></i><i></i></span><br>Load ho raha hai…</p>
+    <div id="cfg-warning" style="display:none;background:rgba(245,158,11,.15);border:1px solid #f59e0b;color:#fde68a;padding:14px;border-radius:14px;font-size:13px;line-height:1.6">
+      ⚙️ <b>Firebase set-up baqi hai.</b><br>index.html kholein, upar <code>firebaseConfig</code> me apni Firebase keys paste karein (SETUP.md me steps hain).</div>
+
+    <div id="welcome-pane" style="display:none">
+      <p class="tagline">Apni dukaan ka poora hisaab, ek jagah</p>
+      <div class="feat-row"><span>📦 Stock</span><span>🧾 Billing</span><span>📊 Reports</span></div>
+      <button type="button" class="btn btn-start" onclick="getStarted()"><span>Get Started</span><i class="arr">→</i></button>
+      <div class="lang-box"><div class="lang-title">🌐 Language / زبان / भाषा</div><div class="lang-chips"></div></div>
+    </div>
+
+    <div id="auth-pane" style="display:none">
+      <button type="button" class="auth-back" onclick="backToWelcome()">← Back</button>
+      <form id="login-form" onsubmit="loginUser(event)">
+        <div class="form-group"><label>Email Address</label><input type="text" id="userEmail" oninput="clearAuthError()" placeholder="Enter email" autocomplete="off" autocapitalize="none" required></div>
+        <div class="form-group"><label>Password</label>
+          <div class="input-container"><input type="password" id="userPass" oninput="clearAuthError()" placeholder="Enter Password" autocomplete="off" required><button type="button" class="eye-btn" onclick="togglePassword('userPass',this)">👁️</button></div></div>
+        <div id="auth-error-login" class="auth-error"></div>
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="btn btn-secondary" onclick="showRegisterForm()">Create New Account</button>
+        <p style="text-align:center;margin-top:14px"><a href="#" onclick="forgotPassword();return false" style="color:#94a3b8;font-size:14px">Password bhool gaye?</a></p>
+      </form>
+      <form id="register-form" onsubmit="registerNewOwner(event)" style="display:none">
+        <div class="form-group"><label>Email Address</label><input type="text" id="regEmail" oninput="clearAuthError()" placeholder="Enter email" autocomplete="off" autocapitalize="none" required></div>
+        <div class="form-group"><label>Password (min 8 chars)</label>
+          <div class="input-container"><input type="password" id="regPass" oninput="clearAuthError()" placeholder="Enter Password" autocomplete="off" required><button type="button" class="eye-btn" onclick="togglePassword('regPass',this)">👁️</button></div></div>
+        <div id="auth-error-reg" class="auth-error"></div>
+        <button type="submit" class="btn" style="background:#10b981;color:#fff">Register & Start</button>
+        <button type="button" class="btn btn-secondary" onclick="showLoginForm()">Back to Login</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div id="cart-modal" class="overlay">
+  <div class="cart-modal-content">
+    <div class="cart-modal-header"><span id="cart-modal-title">Cart</span><button class="cart-close-btn" onclick="closeCartModal()">✕</button></div>
+    <div id="cart-items-container"></div>
+
+    <div class="summary-block">
+      <div class="sum-row"><span>Subtotal</span><span id="summary-sub">Rs 0</span></div>
+      <div class="sum-row"><span>Discount (Rs)</span>
+        <input type="number" id="discount-input" min="0" value="0" oninput="recalcCart()" style="width:110px;border:1px solid #cbd5e1;border-radius:10px;padding:8px;text-align:right;font-weight:700"></div>
+      <div class="sum-row" style="margin-top:8px"><b style="font-size:16px;color:#0f172a">TOTAL</b><span class="sum-total" id="summary-total">Rs 0</span></div>
+    </div>
+
+    <div class="payment-section-box">
+      <span class="payment-label">Payment</span>
+      <div class="pay-methods-grid">
+        <button class="pay-method-tab active" onclick="setPayMethod('Cash',this)">Cash</button>
+        <button class="pay-method-tab" onclick="setPayMethod('Online',this)">Online</button>
+        <button class="pay-method-tab" onclick="setPayMethod('Udhaar',this)">Udhaar</button>
+      </div>
+
+      <div id="cash-sub-options">
+        <span class="payment-label">Amount Received</span>
+        <input type="number" id="amount-received-input" class="light-input" oninput="onAmountReceivedInput()">
+        <div class="quick-cash-grid">
+          <button class="quick-cash-btn active" id="btn-exact" onclick="setQuickCash('exact')">Exact</button>
+          <button class="quick-cash-btn" onclick="setQuickCash(500)">500</button>
+          <button class="quick-cash-btn" onclick="setQuickCash(1000)">1000</button>
+          <button class="quick-cash-btn" onclick="setQuickCash(2000)">2000</button>
+          <button class="quick-cash-btn" onclick="setQuickCash(5000)">5000</button>
+        </div>
+        <div class="change-display-box"><b style="color:#166534;font-size:13px">CHANGE</b><b style="font-size:22px;color:#15803d" id="change-display-val">Rs 0</b></div>
+      </div>
+
+      <div id="online-sub-options" style="display:none">
+        <div class="row">
+          <button class="pay-method-tab active" id="online-card" onclick="setOnlineSub('Card / Bank',this)">Card / Bank</button>
+          <button class="pay-method-tab" id="online-wallet" onclick="setOnlineSub('JazzCash / Easypaisa',this)">Mobile Wallet</button>
+        </div>
+      </div>
+
+      <div id="udhaar-sub-options" style="display:none">
+        <span class="payment-label">Customer ka naam</span>
+        <input type="text" id="udhaar-customer" list="customer-datalist" class="light-input" placeholder="Naam likhein / chunein" style="font-size:16px">
+        <datalist id="customer-datalist"></datalist>
+        <span class="payment-label">Abhi diye (agar kuch diye)</span>
+        <input type="number" id="udhaar-paid" min="0" value="0" class="light-input" oninput="onUdhaarPaidInput()">
+        <div class="change-display-box" style="background:#fef3c7;border-color:#fde68a"><b style="color:#92400e;font-size:13px">UDHAAR BAQI</b><b style="font-size:22px;color:#b45309" id="udhaar-due-val">Rs 0</b></div>
+      </div>
+    </div>
+    <button class="complete-sale-green-btn" onclick="completeCartSale()">✓ Complete Sale & Receipt — <span id="btn-total-text">Rs 0</span></button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-screen">
+  <div class="navbar">
+    <div class="navbar-left"><h2 id="navbar-store-name">MultiShop</h2><span>Sales · PKR</span></div>
+    <div class="navbar-right">
+      <span id="net-badge" style="font-size:12px;font-weight:700;align-self:center;color:var(--sub-text)">…</span>
+      <button class="icon-btn" onclick="openSettingsScreen()" title="Settings">⚙️</button>
+    </div>
+  </div>
+
+  <div id="floating-cart" onclick="openCartModal()">
+    <span class="cart-badge" id="cart-count-badge">0</span>🛒 <span id="cart-total-price">Rs 0</span>
+  </div>
+
+  <div class="bottom-nav"><span id="nav-pill" class="nav-pill"></span>
+    <button id="tab-dashboard" onclick="showTab('dashboard')">🏠 Dashboard</button>
+    <button id="tab-inventory" onclick="showTab('inventory')">📦 Inventory</button>
+    <button id="tab-sell" onclick="showTab('sell')">🛒 Sale</button>
+    <button id="tab-purchase" onclick="showTab('purchase')">🛍️ Purchase</button>
+    <button id="tab-udhaar" onclick="showTab('udhaar')">📒 Udhaar</button>
+    <button id="tab-staff" onclick="showTab('staff')">👥 Staff</button>
+    <button id="tab-mail" onclick="showTab('mail')">✉️ Mail</button>
+  </div>
+
+  <div class="content">
+    <!-- Dashboard -->
+    <div id="section-dashboard">
+      <div class="card">
+        <h3>Dashboard Overview</h3>
+        <p id="welcome-msg" style="color:var(--brand-accent);font-weight:600"></p>
+        <div class="stats-grid">
+          <div class="stat-box" style="border-left:4px solid #38bdf8"><span class="label">AAJ KI SALES</span><h2 class="amount" style="color:#38bdf8">Rs <span id="dash-sales">0</span></h2></div>
+          <div class="stat-box" style="border-left:4px solid #ef4444"><span class="label">AAJ KI PURCHASE</span><h2 class="amount" style="color:#ef4444">Rs <span id="dash-purchases">0</span></h2></div>
+          <div class="stat-box" style="border-left:4px solid #4ade80"><span class="label">AAJ KA PROFIT</span><h2 class="amount" style="color:#4ade80">Rs <span id="dash-profit">0</span></h2></div>
+          <div class="stat-box" style="border-left:4px solid #a855f7"><span class="label">UDHAAR BAQI</span><h2 class="amount" style="color:#a855f7">Rs <span id="dash-udhaar">0</span></h2></div>
+          <div class="stat-box" style="border-left:4px solid #f97316"><span class="label">LOW STOCK ITEMS</span><h2 class="amount" style="color:#f97316"><span id="dash-low">0</span></h2></div>
+          <div class="stat-box owner-only" style="border-left:4px solid #f59e0b"><span class="label">TEAM MEMBERS</span><h2 class="amount" style="color:#f59e0b"><span id="dash-staff">0</span></h2></div>
+        </div>
+        <div class="row" style="margin-top:15px">
+          <button class="btn btn-sm" style="background:#3b82f6;color:#fff" onclick="exportSalesCSV()">📥 Export CSV</button>
+          <button class="btn btn-sm" style="background:#10b981;color:#fff" onclick="showZReport()">📊 Closing Report</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Pichle 7 din ki Sales</h3>
+        <div class="chart" id="sales-chart"></div>
+      </div>
+      <div class="card">
+        <h3>Transactions History</h3>
+        <div id="global-history-list" style="max-height:340px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div id="section-inventory" style="display:none">
+      <div class="card">
+        <h3 id="inv-form-title">Inventory Stock</h3>
+        <input type="text" id="inv-name" class="input-box" placeholder="Product name...">
+        <input type="text" id="inv-code" class="input-box" placeholder="Barcode / SKU code (optional)...">
+        <div class="row">
+          <input type="number" id="inv-cost" class="input-box" placeholder="Cost Price">
+          <input type="number" id="inv-price" class="input-box" placeholder="Selling Price">
+        </div>
+        <div class="row">
+          <input type="number" id="inv-qty" class="input-box" placeholder="Quantity">
+          <input type="number" id="inv-low" class="input-box" placeholder="Low stock alert (default 5)">
+        </div>
+        <button class="btn" onclick="addInventoryItem()">Save Product</button>
+        <button class="btn btn-secondary" id="inv-cancel-btn" style="display:none" onclick="resetInventoryForm()">Edit cancel karein</button>
+      </div>
+      <input type="text" id="inv-search" class="input-box" placeholder="🔍 Inventory me search..." oninput="renderInventoryList()">
+      <div id="inventory-list"></div>
+    </div>
+
+    <!-- Sell -->
+    <div id="section-sell" class="card" style="display:none">
+      <h3>Sale (Live POS)</h3>
+      <div class="search-row">
+        <input type="text" id="pos-search" class="input-box" placeholder="🔍 Naam ya barcode..." oninput="filterPosItems()" onkeydown="posSearchKey(event)">
+        <button class="scan-btn" onclick="openScanner()" title="Camera scanner">📷</button>
+      </div>
+      <div class="pos-grid" id="pos-products-grid"></div>
+    </div>
+
+    <!-- Purchase -->
+    <div id="section-purchase" class="card" style="display:none">
+      <h3>Purchase Stock</h3>
+      <input type="text" id="buy-name" list="inventory-datalist" class="input-box" placeholder="Item name (mojooda ya naya)...">
+      <datalist id="inventory-datalist"></datalist>
+      <input type="text" id="buy-supplier" class="input-box" placeholder="Supplier ka naam (optional)...">
+      <div class="row">
+        <input type="number" id="buy-price" class="input-box" placeholder="Cost per unit">
+        <input type="number" id="buy-qty" class="input-box" placeholder="Quantity">
+      </div>
+      <input type="number" id="buy-sell" class="input-box" placeholder="Naya selling price (naye item ke liye)">
+      <button class="btn" onclick="addPurchaseItem()">Add Purchase (stock barhega)</button>
+      <div id="purchase-list" style="margin-top:15px"></div>
+    </div>
+
+    <!-- Udhaar -->
+    <div id="section-udhaar" class="card" style="display:none">
+      <h3>Udhaar / Customer Ledger</h3>
+      <div class="row">
+        <input type="text" id="cust-name" class="input-box" placeholder="Customer ka naam...">
+        <input type="tel" id="cust-phone" class="input-box" placeholder="Phone (optional)">
+      </div>
+      <button class="btn" onclick="addCustomer()">Customer Add Karein</button>
+      <div id="customer-list" style="margin-top:15px"></div>
+    </div>
+
+    <!-- Staff -->
+    <div id="section-staff" class="card" style="display:none">
+      <h3>Staff Accounts</h3>
+      <input type="text" id="staff-name" class="input-box" placeholder="Worker Name...">
+      <input type="email" id="staff-email" class="input-box" placeholder="Worker Email...">
+      <input type="password" id="staff-password" class="input-box" placeholder="Worker Password (min 8)...">
+      <select id="staff-role" class="input-box"><option value="Worker">Worker / Cashier</option><option value="Manager">Manager</option></select>
+      <input type="tel" id="staff-phone" class="input-box" placeholder="Phone...">
+      <button class="btn" onclick="addStaffMember()">Create Account</button>
+      <div id="staff-list" style="margin-top:15px"></div>
+    </div>
+
+    <!-- Mail -->
+    <div id="section-mail" class="card" style="display:none">
+      <h3>Daily Report Email</h3>
+      <p style="margin-bottom:12px">Aaj ki report aap ke email app me khul jayegi.</p>
+      <input type="email" id="mail-to" class="input-box" placeholder="To email...">
+      <input type="text" id="mail-sub" class="input-box" placeholder="Subject (optional)...">
+      <button class="btn" onclick="sendMail()">Report Email Karein</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings-section">
+  <div class="settings-header"><button class="back-btn" onclick="closeSettingsScreen()">←</button>
+    <div><h2 style="font-size:20px;font-weight:bold">Settings</h2><span style="font-size:13px;color:var(--brand-accent)" id="settings-store-subtitle">Store</span></div></div>
+  <div class="settings-card"><div style="display:flex;align-items:center;gap:16px">
+    <div class="sec-avatar" id="settings-profile-initial">A</div>
+    <div><h3 style="font-size:18px" id="settings-profile-name">User</h3><p style="font-size:14px;color:var(--sub-text)" id="settings-profile-email">email</p></div></div></div>
+  <div class="settings-card owner-only"><div class="settings-card-title">Business</div><div class="settings-card-sub">Store details</div>
+    <div class="settings-menu-item" onclick="promptStoreNameChange()"><span>Edit Store Name</span><span>›</span></div>
+    <div class="settings-menu-item" onclick="backupData()"><span>💾 Backup download karein</span><span>›</span></div>
+    <div class="settings-menu-item" onclick="document.getElementById('import-file').click()"><span>📥 Purani (v2) backup cloud me import</span><span>›</span></div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importOldBackup(event)">
+  </div>
+  <div class="settings-card"><div class="settings-card-title">🌐 Language / زبان / भाषा</div><div class="lang-chips" style="margin-top:12px"></div></div>
+  <div class="settings-card"><div class="settings-card-title">Preferences</div>
+    <div class="settings-menu-item" onclick="openSecurityScreen()"><span>🔒 Security & Password</span><span>›</span></div>
+    <div class="settings-menu-item" onclick="installApp()"><span>📲 App install karein (Home screen)</span><span>›</span></div>
+    <div class="settings-menu-item" onclick="openAppearanceScreen()"><span>🎨 Appearance & Themes</span><span>›</span></div></div>
+  <button class="btn" style="background:#ef4444;color:#fff;padding:16px" onclick="logoutUser()">Logout</button>
+</div>
+
+<div id="security-sub-screen">
+  <div class="settings-header"><button class="back-btn" onclick="closeSecurityScreen()">←</button><h2 style="font-size:20px">Security</h2></div>
+  <div class="settings-card"><div class="settings-card-title">CHANGE PASSWORD</div>
+    <div class="form-group" style="margin-top:12px"><label>Current Password</label><input type="password" id="current-pass-input" class="input-box"></div>
+    <div class="form-group"><label>New Password (min 8 chars)</label><input type="password" id="new-pass-input" class="input-box"></div>
+    <button class="btn" onclick="executePasswordChange()">Update Password</button></div>
+</div>
+
+<div id="appearance-sub-screen">
+  <div class="settings-header"><button class="back-btn" onclick="closeAppearanceScreen()">←</button><h2 style="font-size:20px">Appearance</h2></div>
+  <div class="theme-option-card" id="theme-light" onclick="setAppTheme('light')"><span>☀️ Light Mode</span><div class="radio-circle" id="radio-light"></div></div>
+  <div class="theme-option-card active" id="theme-dark" onclick="setAppTheme('dark')"><span>🌙 Dark Mode</span><div class="radio-circle" id="radio-dark">✓</div></div>
+  <div class="color-grid">
+    <div class="color-circle-btn active" style="background:#2563eb" onclick="setBrandColor('#0284c7','#38bdf8',this)">✓</div>
+    <div class="color-circle-btn" style="background:#f59e0b" onclick="setBrandColor('#d97706','#fbbf24',this)"></div>
+    <div class="color-circle-btn" style="background:#e11d48" onclick="setBrandColor('#be123c','#fb7185',this)"></div>
+    <div class="color-circle-btn" style="background:#9333ea" onclick="setBrandColor('#7e22ce','#c084fc',this)"></div>
+  </div>
+</div>
+
+<script>
+/* ================= FIREBASE CONFIG (yahan apni config paste karein) ================= */
+const firebaseConfig={
+  apiKey:"AIzaSyCgGzooDfSwb1sVLJrYG4UpYAArnzYa6eo",
+  authDomain:"storepix-pro.firebaseapp.com",
+  projectId:"storepix-pro",
+  storageBucket:"storepix-pro.firebasestorage.app",
+  messagingSenderId:"704826954131",
+  appId:"1:704826954131:web:8af674800cf14f6b9b5866"
+};
+const CONFIGURED=!String(firebaseConfig.apiKey).startsWith('PASTE');
+const FB_VER='10.14.1';
+
+/* ================= STATE ================= */
+const ROLE_TABS={
+  Owner:['dashboard','inventory','sell','purchase','udhaar','staff','mail'],
+  Manager:['dashboard','inventory','sell','purchase','udhaar','mail'],
+  Worker:['sell','udhaar']
+};
+let fb=null,registering=false,unsubs=[],pendingWrites=false;
+let currentUid='',currentEmail='',currentName='',currentUserRole='Owner',activeOwnerUid='',storeName='MultiShop';
+let inventoryStock=Object.create(null),productsById={},customers=Object.create(null);
+let transactionHistory=[],staffMembers=[],daysData={};
+let cartItems={},currentCartTotal=0,currentSubtotal=0,selectedPaymentMethod='Cash',selectedOnlineSub='Card / Bank';
+let editingProduct=null,lastReceiptText='',scanStream=null,scanTimer=null;
+
+/* ================= APP INSTALL (PWA) ================= */
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e});
+window.addEventListener('appinstalled',()=>{deferredInstall=null;toast('App install ho gayi ✓')});
+async function installApp(){
+  if(window.matchMedia('(display-mode: standalone)').matches)return alert('Aap pehle se app me hi hain ✓');
+  if(deferredInstall){deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;return}
+  alert('Chrome ke teen dots (⋮) dabayein, phir "Install app" ya "Add to Home screen" chunein.');
+}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW',e)));
+}
+
+/* ================= ANIMATION HELPERS ================= */
+const reduceMotion=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAB_ORDER=['dashboard','inventory','sell','purchase','udhaar','staff','mail'];
+let _prevTab=null;const _seen=new Set();
+const ic=k=>{if(_seen.has(k))return '';_seen.add(k);return ' item-in'};
+const skel=n=>Array.from({length:n},()=>'<div class="skeleton"></div>').join('');
+function showSkeletons(){
+  const set=(id,h)=>{const el=document.getElementById(id);if(el)el.innerHTML=h};
+  set('inventory-list',skel(4));set('global-history-list',skel(4));set('customer-list',skel(3));
+  set('pos-products-grid',skel(4));
+}
+function setLoading(btn,on){
+  if(!btn)return;
+  if(on){btn.dataset.t=btn.innerText;btn.classList.add('loading');btn.innerHTML='<span class="spin"></span>Please wait...'}
+  else{btn.classList.remove('loading');if(btn.dataset.t)btn.innerText=btn.dataset.t}
+}
+function authFail(which,msg){
+  const el=document.getElementById(which==='reg'?'auth-error-reg':'auth-error-login');
+  if(el){el.innerText='⚠️ '+msg;el.classList.add('show')}
+  const c=document.querySelector('#login-screen .container');
+  if(c){c.classList.remove('shake','err');void c.offsetWidth;c.classList.add('shake','err');setTimeout(()=>c.classList.remove('shake','err'),750)}
+  try{if(navigator.vibrate)navigator.vibrate([60,40,60])}catch(e){}
+}
+function clearAuthError(){document.querySelectorAll('.auth-error').forEach(e=>e.classList.remove('show'))}
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest&&e.target.closest('.btn,.btn-sm,.del-btn,.edit-btn,.ok-btn,.warn-btn,.quick-cash-btn,.pay-method-tab,.qty-btn-circle,.complete-sale-green-btn');
+  if(!b||b.disabled||reduceMotion())return;
+  const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height);
+  const s=document.createElement('span');s.className='ripple';
+  s.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';
+  b.appendChild(s);setTimeout(()=>s.remove(),650);
+},{passive:true});
+function confetti(){
+  if(reduceMotion())return;
+  const cv=document.createElement('canvas');
+  cv.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9500';
+  const W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;document.body.appendChild(cv);
+  const ctx=cv.getContext('2d'),cols=['#38bdf8','#10b981','#f59e0b','#a855f7','#ef4444','#ffffff'];
+  const P=Array.from({length:100},()=>({x:W/2,y:H*.6,vx:(Math.random()-.5)*15,vy:-(Math.random()*13+6),s:Math.random()*7+4,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:cols[Math.random()*cols.length|0]}));
+  let f=0;
+  (function step(){
+    ctx.clearRect(0,0,W,H);f++;
+    P.forEach(p=>{p.vy+=.36;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.r+=p.vr;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.globalAlpha=Math.max(0,1-f/115);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/3,p.s,p.s*.6);ctx.restore()});
+    if(f<115)requestAnimationFrame(step);else cv.remove();
+  })();
+}
+function flyToCart(src){
+  if(!src||reduceMotion()||!src.getBoundingClientRect||!document.body.animate)return;
+  const r=src.getBoundingClientRect();
+  const el=document.createElement('div');el.className='fly';
+  el.style.left=(r.left+r.width/2-14)+'px';el.style.top=(r.top+r.height/2-14)+'px';
+  document.body.appendChild(el);
+  const tx=window.innerWidth/2-(r.left+r.width/2),ty=window.innerHeight-105-(r.top+r.height/2);
+  const a=el.animate([
+    {transform:'translate(0,0) scale(1)',opacity:1},
+    {transform:'translate('+tx*0.5+'px,'+(ty*0.5-70)+'px) scale(.85)',opacity:1,offset:.5},
+    {transform:'translate('+tx+'px,'+ty+'px) scale(.25)',opacity:.3}
+  ],{duration:650,easing:'cubic-bezier(.4,0,.6,1)'});
+  a.onfinish=()=>el.remove();
+}
+function movePill(){
+  const b=document.querySelector('.bottom-nav button.active'),p=document.getElementById('nav-pill');
+  if(!b||!p||!b.offsetWidth)return;
+  p.style.width=b.offsetWidth+'px';p.style.transform='translateX('+b.offsetLeft+'px)';
+  try{b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})}catch(e){}
+}
+window.addEventListener('resize',movePill);
+
+/* ================= HELPERS ================= */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{let n=parseFloat(v);return isNaN(n)?0:n};
+const fmt=n=>Math.round((n||0)*100)/100;
+const dayKey=(d=new Date())=>d.toLocaleDateString('en-CA');
+const can=(...roles)=>roles.includes(currentUserRole);
+function getSafe(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function setSafe(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function parseJSON(s,fb2){try{return s?JSON.parse(s):fb2}catch(e){return fb2}}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.classList.remove('show');void t.offsetWidth;t.innerText=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400)}
+function showErr(e){console.error(e);alert('Save nahi ho saka: '+((e&&e.code==='permission-denied')?'ijazat nahi mili (aap ka role ya Firestore rules check karein)':((e&&e.message)||e)))}
+function wr(p){p.catch(showErr)}
+function authErr(e){
+  const m={'auth/invalid-credential':'Email ya password ghalat hai!','auth/wrong-password':'Email ya password ghalat hai!','auth/user-not-found':'Email ya password ghalat hai!',
+  'auth/email-already-in-use':'Ye email pehle se registered hai.','auth/weak-password':'Password kamzor hai (kam az kam 8 characters).','auth/invalid-email':'Email sahi nahi hai.',
+  'auth/too-many-requests':'Bohat zyada koshishein. Thori der baad dobara try karein.','auth/network-request-failed':'Internet check karein.','auth/requires-recent-login':'Dobara login karein aur phir koshish karein.'};
+  return m[e&&e.code]||(e&&e.message)||String(e);
+}
+
+/* firestore shortcuts */
+const dref=(...p)=>fb.F.doc(fb.db,'stores',activeOwnerUid,...p);
+const ccol=n=>fb.F.collection(fb.db,'stores',activeOwnerUid,n);
+const newId=n=>fb.F.doc(ccol(n)).id;
+const inc=n=>fb.F.increment(n);
+const newBatch=()=>fb.F.writeBatch(fb.db);
+function commit(b){b.commit().catch(showErr)}
+
+/* ================= FIREBASE INIT ================= */
+async function initFirebase(){
+  const base='https://www.gstatic.com/firebasejs/'+FB_VER+'/';
+  const [A,Au,F]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
+  const app=A.initializeApp(firebaseConfig);
+  const auth=Au.getAuth(app);
+  let db;
+  try{db=F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()}),experimentalAutoDetectLongPolling:true})}
+  catch(e){console.warn('Offline cache band:',e);db=F.getFirestore(app)}
+  fb={A,Au,F,app,auth,db};
+}
+
+function authFormsVisible(v){
+  const w=document.getElementById('welcome-pane'),a=document.getElementById('auth-pane');
+  w.style.display=v?'block':'none';a.style.display='none';
+  document.getElementById('login-form').style.display=v?'block':'none';
+  document.getElementById('register-form').style.display='none';
+  if(v)animPane(w);
+}
+function animPane(el){el.classList.remove('pane-in');void el.offsetWidth;el.classList.add('pane-in')}
+function getStarted(){
+  const w=document.getElementById('welcome-pane'),a=document.getElementById('auth-pane');
+  const go=()=>{w.style.display='none';w.classList.remove('pane-out');a.style.display='block';animPane(a);showLoginForm()};
+  if(reduceMotion())return go();
+  w.classList.add('pane-out');setTimeout(go,260);
+}
+function backToWelcome(){
+  const w=document.getElementById('welcome-pane'),a=document.getElementById('auth-pane');
+  clearAuthError();a.style.display='none';w.style.display='block';animPane(w);
+}
+
+window.addEventListener('DOMContentLoaded',async()=>{
+  setAppTheme(getSafe('storepix_theme')||'dark',false);
+  initLang();makeBubbles();
+  const bc=parseJSON(getSafe('storepix_brand'),null);
+  if(bc)applyBrand(bc.p,bc.a);
+  window.addEventListener('online',updateNetBadge);window.addEventListener('offline',updateNetBadge);
+  authFormsVisible(false);
+  if(CONFIGURED){document.getElementById('boot-msg').style.display='none';authFormsVisible(true);window._uiShown=true;
+    setTimeout(()=>{if(!window._authResolved){const m=document.getElementById('boot-msg');m.style.display='block';m.innerHTML='⏳ Internet slow hai… <a href="#" onclick="location.reload();return false" style="color:#38bdf8">Dobara try karein</a>'}},9000)}
+  if(!CONFIGURED){
+    document.getElementById('boot-msg').style.display='none';
+    document.getElementById('cfg-warning').style.display='block';
+    return;
+  }
+  try{await initFirebase()}
+  catch(e){
+    console.error(e);
+    const bm=document.getElementById('boot-msg');bm.style.display='block';bm.innerHTML='⚠️ Firebase load nahi hua. Internet check karein. <a href="#" onclick="location.reload();return false" style="color:#38bdf8">Dobara try karein</a>';
+    return;
+  }
+  fb.Au.onAuthStateChanged(fb.auth,onAuthChange);
+  setInterval(()=>{if(activeOwnerUid){updateDashboard();renderAllLists()}},60000);
+});
+
+/* ================= LANGUAGE (i18n) ================= */
+const LANGS={rm:{n:'Roman Urdu',dir:'ltr',html:'ur'},en:{n:'English',dir:'ltr',html:'en'},ur:{n:'اردو',dir:'rtl',html:'ur'},hi:{n:'हिन्दी',dir:'ltr',html:'hi'}};
+const LI={en:1,ur:2,hi:3};
+let LANG='rm';
+const EX=Object.create(null),PT=[],REG=[];
+function D(rows){rows.forEach(r=>{EX[r[0]]=r})}
+function P(rows){rows.forEach(r=>PT.push(r));PT.sort((a,b)=>b[0].length-a[0].length)}
+/* [source, English, Urdu, Hindi] — '' = same as source */
+D([
+['Item','','آئٹم','आइटम'],['Qty','','مقدار','मात्रा'],['Sub','','ذیلی','उप'],
+['Thank you for shopping!','','خریداری کا شکریہ!','खरीदारी के लिए धन्यवाद!'],
+['Powered by MultiShop','','MultiShop کی طرف سے','MultiShop द्वारा'],
+['🖨️ Print / PDF','','🖨️ پرنٹ / پی ڈی ایف','🖨️ प्रिंट / पीडीएफ'],
+['Done / New Sale','','مکمل / نئی سیل','पूरा / नई सेल'],
+['Barcode camera ke saamne rakhein','Hold the barcode in front of the camera','بارکوڈ کیمرے کے سامنے رکھیں','बारकोड कैमरे के सामने रखें'],
+['Band karein','Close','بند کریں','बंद करें'],
+['Business Management Portal','','بزنس مینجمنٹ پورٹل','बिज़नेस मैनेजमेंट पोर्टल'],
+['Apni dukaan ka poora hisaab, ek jagah','Run your whole shop from one place','اپنی دکان کا پورا حساب، ایک جگہ','अपनी दुकान का पूरा हिसाब, एक जगह'],
+['📦 Stock','','📦 اسٹاک','📦 स्टॉक'],['🧾 Billing','','🧾 بلنگ','🧾 बिलिंग'],['📊 Reports','','📊 رپورٹس','📊 रिपोर्ट'],
+['Get Started','','شروع کریں','शुरू करें'],['← Back','','← واپس','← वापस'],
+['Load ho raha hai…','Loading…','لوڈ ہو رہا ہے…','लोड हो रहा है…'],
+['Email Address','','ای میل ایڈریس','ईमेल एड्रेस'],['Enter email','','ای میل لکھیں','ईमेल लिखें'],
+['Password','','پاس ورڈ','पासवर्ड'],['Enter Password','','پاس ورڈ لکھیں','पासवर्ड लिखें'],
+['Login','','لاگ اِن','लॉगिन'],['Create New Account','','نیا اکاؤنٹ بنائیں','नया अकाउंट बनाएँ'],
+['Password bhool gaye?','Forgot password?','پاس ورڈ بھول گئے؟','पासवर्ड भूल गए?'],
+['Password (min 8 chars)','','پاس ورڈ (کم از کم 8 حروف)','पासवर्ड (कम से कम 8 अक्षर)'],
+['Register & Start','','رجسٹر کریں اور شروع کریں','रजिस्टर करें और शुरू करें'],
+['Back to Login','','لاگ اِن پر واپس','लॉगिन पर वापस'],
+['Cart','','کارٹ','कार्ट'],['Subtotal','','ذیلی کل','उप-कुल'],['Discount (Rs)','','رعایت (Rs)','छूट (Rs)'],
+['Discount','','رعایت','छूट'],['TOTAL','','کل','कुल'],['Payment','','ادائیگی','भुगतान'],
+['Cash','','نقد','नकद'],['Online','','آن لائن','ऑनलाइन'],['Udhaar','Credit','ادھار','उधार'],
+['Amount Received','','وصول شدہ رقم','प्राप्त राशि'],['Exact','','پوری','सटीक'],['CHANGE','','واپسی رقم','बाकी वापसी'],
+['Card / Bank','','کارڈ / بینک','कार्ड / बैंक'],['Mobile Wallet','','موبائل والٹ','मोबाइल वॉलेट'],
+['Customer ka naam','Customer name','گاہک کا نام','ग्राहक का नाम'],
+['Naam likhein / chunein','Type / choose name','نام لکھیں / چنیں','नाम लिखें / चुनें'],
+['Abhi diye (agar kuch diye)','Paid now (if any)','ابھی دیے (اگر کچھ دیے)','अभी दिए (अगर कुछ दिए)'],
+['UDHAAR BAQI','CREDIT DUE','ادھار باقی','उधार बाकी'],
+['✓ Complete Sale & Receipt —','','✓ سیل مکمل کریں اور رسید —','✓ सेल पूरी करें और रसीद —'],
+['Sales · PKR','','سیلز · PKR','सेल्स · PKR'],
+['🏠 Dashboard','','🏠 ڈیش بورڈ','🏠 डैशबोर्ड'],['📦 Inventory','','📦 انوینٹری','📦 इन्वेंटरी'],
+['🛒 Sale','','🛒 سیل','🛒 सेल'],['🛍️ Purchase','','🛍️ خریداری','🛍️ खरीद'],
+['📒 Udhaar','📒 Credit','📒 ادھار','📒 उधार'],['👥 Staff','','👥 عملہ','👥 स्टाफ़'],['✉️ Mail','','✉️ میل','✉️ मेल'],
+['Dashboard Overview','','ڈیش بورڈ کا جائزہ','डैशबोर्ड अवलोकन'],
+['AAJ KI SALES',"TODAY'S SALES",'آج کی سیلز','आज की सेल'],['AAJ KI PURCHASE',"TODAY'S PURCHASE",'آج کی خریداری','आज की खरीद'],
+['AAJ KA PROFIT',"TODAY'S PROFIT",'آج کا منافع','आज का मुनाफ़ा'],
+['LOW STOCK ITEMS','','کم اسٹاک آئٹمز','कम स्टॉक आइटम'],['TEAM MEMBERS','','ٹیم ممبرز','टीम सदस्य'],
+['📥 Export CSV','','📥 CSV ایکسپورٹ','📥 CSV एक्सपोर्ट'],['📊 Closing Report','','📊 کلوزنگ رپورٹ','📊 क्लोज़िंग रिपोर्ट'],
+['Pichle 7 din ki Sales','Last 7 days Sales','پچھلے 7 دن کی سیلز','पिछले 7 दिन की सेल'],
+['Transactions History','','لین دین کی تاریخ','लेन-देन का इतिहास'],['Inventory Stock','','انوینٹری اسٹاک','इन्वेंटरी स्टॉक'],
+['Product name...','','پروڈکٹ کا نام...','प्रोडक्ट का नाम...'],
+['Barcode / SKU code (optional)...','','بارکوڈ / SKU کوڈ (اختیاری)...','बारकोड / SKU कोड (वैकल्पिक)...'],
+['Cost Price','','لاگت قیمت','लागत मूल्य'],['Selling Price','','فروخت قیمت','बिक्री मूल्य'],['Quantity','','مقدار','मात्रा'],
+['Low stock alert (default 5)','','کم اسٹاک الرٹ (ڈیفالٹ 5)','कम स्टॉक अलर्ट (डिफ़ॉल्ट 5)'],
+['Save Product','','پروڈکٹ محفوظ کریں','प्रोडक्ट सेव करें'],
+['Edit cancel karein','Cancel edit','ایڈٹ منسوخ کریں','एडिट रद्द करें'],
+['🔍 Inventory me search...','🔍 Search inventory...','🔍 انوینٹری میں تلاش...','🔍 इन्वेंटरी में खोजें...'],
+['Sale (Live POS)','','سیل (لائیو POS)','सेल (लाइव POS)'],
+['🔍 Naam ya barcode...','🔍 Name or barcode...','🔍 نام یا بارکوڈ...','🔍 नाम या बारकोड...'],
+['Camera scanner','','کیمرہ اسکینر','कैमरा स्कैनर'],
+['Purchase Stock','','اسٹاک خریداری','स्टॉक खरीद'],
+['Item name (mojooda ya naya)...','Item name (existing or new)...','آئٹم کا نام (موجودہ یا نیا)...','आइटम का नाम (मौजूदा या नया)...'],
+['Supplier ka naam (optional)...','Supplier name (optional)...','سپلائر کا نام (اختیاری)...','सप्लायर का नाम (वैकल्पिक)...'],
+['Cost per unit','','فی یونٹ لاگت','प्रति यूनिट लागत'],
+['Naya selling price (naye item ke liye)','New selling price (for a new item)','نئی فروخت قیمت (نئے آئٹم کے لیے)','नया बिक्री मूल्य (नए आइटम के लिए)'],
+['Add Purchase (stock barhega)','Add Purchase (stock will increase)','خریداری شامل کریں (اسٹاک بڑھے گا)','खरीद जोड़ें (स्टॉक बढ़ेगा)'],
+['Udhaar / Customer Ledger','Credit / Customer Ledger','ادھار / گاہک کھاتہ','उधार / ग्राहक खाता'],
+['Customer ka naam...','Customer name...','گاہک کا نام...','ग्राहक का नाम...'],
+['Phone (optional)','','فون (اختیاری)','फ़ोन (वैकल्पिक)'],
+['Customer Add Karein','Add Customer','گاہک شامل کریں','ग्राहक जोड़ें'],
+['Staff Accounts','','اسٹاف اکاؤنٹس','स्टाफ़ अकाउंट'],
+['Worker Name...','','ورکر کا نام...','वर्कर का नाम...'],['Worker Email...','','ورکر کی ای میل...','वर्कर का ईमेल...'],
+['Worker Password (min 8)...','','ورکر پاس ورڈ (کم از کم 8)...','वर्कर पासवर्ड (कम से कम 8)...'],
+['Worker / Cashier','','ورکر / کیشیئر','वर्कर / कैशियर'],['Manager','','منیجر','मैनेजर'],['Worker','','ورکر','वर्कर'],['Owner','','مالک','मालिक'],
+['Phone...','','فون...','फ़ोन...'],['Create Account','','اکاؤنٹ بنائیں','अकाउंट बनाएँ'],
+['Daily Report Email','','روزانہ رپورٹ ای میل','दैनिक रिपोर्ट ईमेल'],
+['Aaj ki report aap ke email app me khul jayegi.',"Today's report will open in your email app.",'آج کی رپورٹ آپ کی ای میل ایپ میں کھل جائے گی۔','आज की रिपोर्ट आपके ईमेल ऐप में खुल जाएगी।'],
+['To email...','','کس کو ای میل...','किसे ईमेल...'],['Subject (optional)...','','موضوع (اختیاری)...','विषय (वैकल्पिक)...'],
+['Report Email Karein','Email Report','رپورٹ ای میل کریں','रिपोर्ट ईमेल करें'],
+['Settings','','سیٹنگز','सेटिंग्स'],['Store','','دکان','दुकान'],['User','','صارف','यूज़र'],['Business','','کاروبار','कारोबार'],
+['Store details','','دکان کی تفصیل','दुकान का विवरण'],['Edit Store Name','','دکان کا نام بدلیں','दुकान का नाम बदलें'],
+['💾 Backup download karein','💾 Download backup','💾 بیک اپ ڈاؤن لوڈ کریں','💾 बैकअप डाउनलोड करें'],
+['📥 Purani (v2) backup cloud me import','📥 Import old (v2) backup to cloud','📥 پرانا (v2) بیک اپ کلاؤڈ میں امپورٹ کریں','📥 पुराना (v2) बैकअप क्लाउड में इम्पोर्ट करें'],
+['Preferences','','ترجیحات','पसंद'],['🔒 Security & Password','','🔒 سیکیورٹی اور پاس ورڈ','🔒 सुरक्षा और पासवर्ड'],
+['📲 App install karein (Home screen)','📲 Install app (Home screen)','📲 ایپ انسٹال کریں (ہوم اسکرین)','📲 ऐप इंस्टॉल करें (होम स्क्रीन)'],
+['🎨 Appearance & Themes','','🎨 ظاہری شکل اور تھیمز','🎨 रूप और थीम'],
+['Logout','','لاگ آؤٹ','लॉगआउट'],['Security','','سیکیورٹی','सुरक्षा'],
+['CHANGE PASSWORD','','پاس ورڈ تبدیل کریں','पासवर्ड बदलें'],['Current Password','','موجودہ پاس ورڈ','मौजूदा पासवर्ड'],
+['New Password (min 8 chars)','','نیا پاس ورڈ (کم از کم 8 حروف)','नया पासवर्ड (कम से कम 8 अक्षर)'],
+['Update Password','','پاس ورڈ اپڈیٹ کریں','पासवर्ड अपडेट करें'],['Appearance','','ظاہری شکل','रूप'],
+['☀️ Light Mode','','☀️ لائٹ موڈ','☀️ लाइट मोड'],['🌙 Dark Mode','','🌙 ڈارک موڈ','🌙 डार्क मोड'],
+/* dynamic */
+['🟠 Offline','','🟠 آف لائن','🟠 ऑफ़लाइन'],['🔄 Sync','','🔄 سنک','🔄 सिंक'],['🟢 Online','','🟢 آن لائن','🟢 ऑनलाइन'],
+['Internet nahi — sab kuch save ho raha hai, wapas aane par sync hoga','No internet — everything is saved and will sync when you are back online','انٹرنیٹ نہیں — سب کچھ محفوظ ہو رہا ہے، واپس آنے پر سنک ہوگا','इंटरनेट नहीं — सब सेव हो रहा है, वापस आने पर सिंक होगा'],
+['Server par save ho raha hai','Saving to server','سرور پر محفوظ ہو رہا ہے','सर्वर पर सेव हो रहा है'],
+['Sab sync hai','Everything is synced','سب سنک ہے','सब सिंक है'],
+['Koi product nahi.','No products.','کوئی پروڈکٹ نہیں۔','कोई प्रोडक्ट नहीं।'],
+['Koi product nahi mila.','No product found.','کوئی پروڈکٹ نہیں ملا۔','कोई प्रोडक्ट नहीं मिला।'],
+['Abhi koi history nahi.','No history yet.','ابھی کوئی ہسٹری نہیں۔','अभी कोई इतिहास नहीं।'],
+['Koi customer nahi.','No customers.','کوئی گاہک نہیں۔','कोई ग्राहक नहीं।'],
+['Abhi koi staff nahi.','No staff yet.','ابھی کوئی اسٹاف نہیں۔','अभी कोई स्टाफ़ नहीं।'],
+['Khatam','Out','ختم','ख़त्म'],['Edit','','ایڈٹ','एडिट'],['Delete','','ڈیلیٹ','डिलीट'],['Del','','ڈیل','डिल'],
+['Return','','واپسی','रिटर्न'],['Yaad dihani','Remind','یاد دہانی','याद दिलाएँ'],
+['Phone nahi','No phone','فون نہیں','फ़ोन नहीं'],['RETURNED','','واپس شدہ','वापस'],
+['SELL','','فروخت','बिक्री'],['PURCHASE','','خریداری','खरीद'],['UDHAAR-PAID','CREDIT-PAID','ادھار ادا','उधार चुकता'],
+['Received','','وصول','प्राप्त'],['Change','','واپسی','बाकी'],['Paid now','','ابھی ادا','अभी दिए'],
+['Udhaar baqi','Credit due','ادھار باقی','उधार बाकी'],
+['Install app','','انسٹال ایپ','ऐप इंस्टॉल'],
+['App install ho gayi ✓','App installed ✓','ایپ انسٹال ہو گئی ✓','ऐप इंस्टॉल हो गई ✓'],
+['Aap pehle se app me hi hain ✓','You are already in the app ✓','آپ پہلے ہی ایپ میں ہیں ✓','आप पहले से ऐप में हैं ✓'],
+['Chrome ke teen dots (⋮) dabayein, phir "Install app" ya "Add to Home screen" chunein.','Tap the three dots (⋮) in Chrome, then choose "Install app" or "Add to Home screen".','کروم کے تین نقطے (⋮) دبائیں، پھر "Install app" یا "Add to Home screen" چنیں۔','क्रोम के तीन डॉट (⋮) दबाएँ, फिर "Install app" या "Add to Home screen" चुनें।'],
+['Email ya password ghalat hai!','Wrong email or password!','ای میل یا پاس ورڈ غلط ہے!','ईमेल या पासवर्ड गलत है!'],
+['Ye email pehle se registered hai.','This email is already registered.','یہ ای میل پہلے سے رجسٹرڈ ہے۔','यह ईमेल पहले से रजिस्टर्ड है।'],
+['Password kamzor hai (kam az kam 8 characters).','Password is weak (at least 8 characters).','پاس ورڈ کمزور ہے (کم از کم 8 حروف)۔','पासवर्ड कमज़ोर है (कम से कम 8 अक्षर)।'],
+['Email sahi nahi hai.','The email is not valid.','ای میل درست نہیں ہے۔','ईमेल सही नहीं है।'],
+['Bohat zyada koshishein. Thori der baad dobara try karein.','Too many attempts. Please try again in a little while.','بہت زیادہ کوششیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔','बहुत ज़्यादा कोशिशें। थोड़ी देर बाद फिर कोशिश करें।'],
+['Internet check karein.','Check your internet.','انٹرنیٹ چیک کریں۔','इंटरनेट जाँचें।'],
+['Dobara login karein aur phir koshish karein.','Log in again and then retry.','دوبارہ لاگ اِن کریں اور پھر کوشش کریں۔','दोबारा लॉगिन करें और फिर कोशिश करें।'],
+['Ye account active nahi hai (owner ne hata diya ho sakta hai, ya register mukammal nahi hua).','This account is not active (the owner may have removed it, or registration was not completed).','یہ اکاؤنٹ فعال نہیں ہے (مالک نے ہٹا دیا ہو سکتا ہے، یا رجسٹریشن مکمل نہیں ہوئی)۔','यह अकाउंट सक्रिय नहीं है (मालिक ने हटा दिया हो सकता है, या रजिस्ट्रेशन पूरा नहीं हुआ)।'],
+['Sab fields bharein!','Fill in all fields!','تمام خانے بھریں!','सभी फ़ील्ड भरें!'],
+['Password kam az kam 8 characters ka ho!','Password must be at least 8 characters!','پاس ورڈ کم از کم 8 حروف کا ہو!','पासवर्ड कम से कम 8 अक्षर का हो!'],
+['Naya password kam az kam 8 characters ka ho!','New password must be at least 8 characters!','نیا پاس ورڈ کم از کم 8 حروف کا ہو!','नया पासवर्ड कम से कम 8 अक्षर का हो!'],
+['Firestore rules publish nahi hue (SETUP guide dekhein).','Firestore rules are not published (see the SETUP guide).','Firestore رولز پبلش نہیں ہوئے (SETUP گائیڈ دیکھیں)۔','Firestore रूल्स पब्लिश नहीं हुए (SETUP गाइड देखें)।'],
+['Email aur password dono likhein.','Enter both email and password.','ای میل اور پاس ورڈ دونوں لکھیں۔','ईमेल और पासवर्ड दोनों लिखें।'],
+['Pehle upar Email likhein, phir "Password bhool gaye" dabayein.','First enter your email above, then tap "Forgot password".','پہلے اوپر ای میل لکھیں، پھر "پاس ورڈ بھول گئے" دبائیں۔','पहले ऊपर ईमेल लिखें, फिर "पासवर्ड भूल गए" दबाएँ।'],
+['Agar ye email registered hai to reset ka link bhej diya gaya hai. Inbox/Spam check karein.','If this email is registered, a reset link has been sent. Check your Inbox/Spam.','اگر یہ ای میل رجسٹرڈ ہے تو ری سیٹ کا لنک بھیج دیا گیا ہے۔ ان باکس/اسپام چیک کریں۔','अगर यह ईमेल रजिस्टर्ड है तो रीसेट का लिंक भेज दिया गया है। इनबॉक्स/स्पैम जाँचें।'],
+['Aap ka account hata diya gaya hai.','Your account has been removed.','آپ کا اکاؤنٹ ہٹا دیا گیا ہے۔','आपका अकाउंट हटा दिया गया है।'],
+['Password update ho gaya ✓','Password updated ✓','پاس ورڈ اپڈیٹ ہو گیا ✓','पासवर्ड अपडेट हो गया ✓'],
+['Store name:','','دکان کا نام:','दुकान का नाम:'],['Updated ✓','','اپڈیٹ ہو گیا ✓','अपडेट हो गया ✓'],
+['Sirf Owner/Manager ye kar sakta hai!','Only the Owner/Manager can do this!','صرف مالک/منیجر یہ کر سکتا ہے!','सिर्फ़ मालिक/मैनेजर यह कर सकता है!'],
+['Negative qeemat/quantity nahi ho sakti!','Price/quantity cannot be negative!','قیمت/مقدار منفی نہیں ہو سکتی!','कीमत/मात्रा नकारात्मक नहीं हो सकती!'],
+['Product save ho gaya ✓','Product saved ✓','پروڈکٹ محفوظ ہو گیا ✓','प्रोडक्ट सेव हो गया ✓'],
+['Stock khatam hai!','Out of stock!','اسٹاک ختم ہے!','स्टॉक ख़त्म है!'],
+['Stock ki had poori!','Stock limit reached!','اسٹاک کی حد پوری!','स्टॉक की सीमा पूरी!'],
+['Stock se zyada nahi ho sakta!','Cannot exceed stock!','اسٹاک سے زیادہ نہیں ہو سکتا!','स्टॉक से ज़्यादा नहीं हो सकता!'],
+['Udhaar ke liye customer ka naam likhein!','Enter the customer name for credit!','ادھار کے لیے گاہک کا نام لکھیں!','उधार के लिए ग्राहक का नाम लिखें!'],
+['Receive ki gayi raqam bill se kam hai! Kam raqam ke liye Udhaar chunein.','The amount received is less than the bill! Choose Credit for the shortfall.','وصول کی گئی رقم بل سے کم ہے! کم رقم کے لیے ادھار چنیں۔','प्राप्त राशि बिल से कम है! कम राशि के लिए उधार चुनें।'],
+['Is browser me camera scanner support nahi hai (Chrome Android use karein). USB scanner ya barcode manually likh kar Enter dabayein.','Camera scanner is not supported in this browser (use Chrome on Android). Use a USB scanner or type the barcode and press Enter.','اس براؤزر میں کیمرہ اسکینر سپورٹ نہیں ہے (اینڈرائیڈ کروم استعمال کریں)۔ USB اسکینر استعمال کریں یا بارکوڈ لکھ کر Enter دبائیں۔','इस ब्राउज़र में कैमरा स्कैनर सपोर्ट नहीं है (एंड्रॉइड क्रोम इस्तेमाल करें)। USB स्कैनर इस्तेमाल करें या बारकोड लिखकर Enter दबाएँ।'],
+['Camera ki ijazat nahi mili!','Camera permission denied!','کیمرے کی اجازت نہیں ملی!','कैमरे की अनुमति नहीं मिली!'],
+['Naam, sahi cost aur quantity likhein!','Enter a name, a valid cost and quantity!','نام، درست لاگت اور مقدار لکھیں!','नाम, सही लागत और मात्रा लिखें!'],
+['Naya item hai, uska selling price bhi likhein!','This is a new item, enter its selling price too!','نیا آئٹم ہے، اس کی فروخت قیمت بھی لکھیں!','नया आइटम है, उसका बिक्री मूल्य भी लिखें!'],
+['Purchase record ho gayi, stock barh gaya ✓','Purchase recorded, stock increased ✓','خریداری ریکارڈ ہو گئی، اسٹاک بڑھ گیا ✓','खरीद दर्ज हो गई, स्टॉक बढ़ गया ✓'],
+['Sirf Owner/Manager return le sakta hai!','Only the Owner/Manager can take a return!','صرف مالک/منیجر واپسی لے سکتا ہے!','सिर्फ़ मालिक/मैनेजर रिटर्न ले सकता है!'],
+['Ye sale return karni hai? Stock wapis aa jayega aur sales kam hongi.','Return this sale? Stock will be restored and sales will decrease.','یہ سیل واپس کرنی ہے؟ اسٹاک واپس آ جائے گا اور سیلز کم ہوں گی۔','यह सेल रिटर्न करनी है? स्टॉक वापस आ जाएगा और सेल कम होगी।'],
+['Return ho gaya ✓','Return done ✓','واپسی ہو گئی ✓','रिटर्न हो गया ✓'],
+['Sirf Owner transaction delete kar sakta hai!','Only the Owner can delete a transaction!','صرف مالک لین دین ڈیلیٹ کر سکتا ہے!','सिर्फ़ मालिक लेन-देन डिलीट कर सकता है!'],
+['Ye transaction delete karni hai? Record hamesha ke liye hat jayega.','Delete this transaction? The record will be removed permanently.','یہ لین دین ڈیلیٹ کرنا ہے؟ ریکارڈ ہمیشہ کے لیے ہٹ جائے گا۔','यह लेन-देन डिलीट करना है? रिकॉर्ड हमेशा के लिए हट जाएगा।'],
+['Delete ho gaya ✓','Deleted ✓','ڈیلیٹ ہو گیا ✓','डिलीट हो गया ✓'],
+['Naam likhein!','Enter a name!','نام لکھیں!','नाम लिखें!'],
+['Ye customer pehle se hai!','This customer already exists!','یہ گاہک پہلے سے موجود ہے!','यह ग्राहक पहले से है!'],
+['Customer add ho gaya ✓','Customer added ✓','گاہک شامل ہو گیا ✓','ग्राहक जुड़ गया ✓'],
+['Raqam sahi nahi (0 se zyada aur baqi se kam ho)!','Invalid amount (must be above 0 and not more than the balance)!','رقم درست نہیں (0 سے زیادہ اور باقی سے کم ہو)!','राशि सही नहीं (0 से ज़्यादा और बाकी से कम हो)!'],
+['Aakhri 200 transactions export hui','Last 200 transactions exported','آخری 200 لین دین ایکسپورٹ ہوئے','आख़िरी 200 लेन-देन एक्सपोर्ट हुए'],
+['Email address likhein!','Enter an email address!','ای میل ایڈریس لکھیں!','ईमेल एड्रेस लिखें!'],
+['Ye purane backup ki sahi file nahi hai!','This is not a valid old backup file!','یہ پرانے بیک اپ کی درست فائل نہیں ہے!','यह पुराने बैकअप की सही फ़ाइल नहीं है!'],
+['Import mukammal ✓','Import complete ✓','امپورٹ مکمل ✓','इम्पोर्ट पूरा ✓'],
+['Sirf Owner staff bana sakta hai!','Only the Owner can create staff!','صرف مالک اسٹاف بنا سکتا ہے!','सिर्फ़ मालिक स्टाफ़ बना सकता है!'],
+['Naam, email aur password likhein!','Enter name, email and password!','نام، ای میل اور پاس ورڈ لکھیں!','नाम, ईमेल और पासवर्ड लिखें!'],
+['Account ban raha hai...','Creating account...','اکاؤنٹ بن رہا ہے...','अकाउंट बन रहा है...'],
+['Account ban gaya ✓','Account created ✓','اکاؤنٹ بن گیا ✓','अकाउंट बन गया ✓'],
+['Ye email Firebase me pehle se hai (shayad purana hata hua staff) aur ye password us se match nahi karta. Wohi purana password likhein ya Firebase Console > Authentication se wo user delete karein.','This email already exists in Firebase (probably a removed staff member) and this password does not match. Enter the old password or delete that user from Firebase Console > Authentication.','یہ ای میل فائر بیس میں پہلے سے ہے (شاید ہٹایا ہوا اسٹاف) اور یہ پاس ورڈ میچ نہیں کرتا۔ وہی پرانا پاس ورڈ لکھیں یا Firebase Console > Authentication سے وہ یوزر ڈیلیٹ کریں۔','यह ईमेल Firebase में पहले से है (शायद हटाया हुआ स्टाफ़) और यह पासवर्ड मेल नहीं खाता। वही पुराना पासवर्ड लिखें या Firebase Console > Authentication से वह यूज़र डिलीट करें।'],
+['Ijazat nahi mili','Permission denied','اجازت نہیں ملی','अनुमति नहीं मिली']
+]);
+/* partial phrases (inside longer text) */
+P([
+['Save nahi ho saka: ','Could not save: ','محفوظ نہیں ہو سکا: ','सेव नहीं हो सका: '],
+['ijazat nahi mili (aap ka role ya Firestore rules check karein)','permission denied (check your role or Firestore rules)','اجازت نہیں ملی (اپنا رول یا Firestore رولز چیک کریں)','अनुमति नहीं मिली (अपना रोल या Firestore रूल्स जाँचें)'],
+['Profile load nahi ho saka: ','Could not load profile: ','پروفائل لوڈ نہیں ہو سکا: ','प्रोफ़ाइल लोड नहीं हो सका: '],
+['Internet check karein.','Check your internet.','انٹرنیٹ چیک کریں۔','इंटरनेट जाँचें।'],
+['Account nahi ban saka: ','Could not create account: ','اکاؤنٹ نہیں بن سکا: ','अकाउंट नहीं बन सका: '],
+['Firestore rules publish nahi hue (SETUP guide dekhein).','Firestore rules are not published (see the SETUP guide).','Firestore رولز پبلش نہیں ہوئے (SETUP گائیڈ دیکھیں)۔','Firestore रूल्स पब्लिश नहीं हुए (SETUP गाइड देखें)।'],
+['⚠️ Ijazat nahi mili (','⚠️ Permission denied (','⚠️ اجازت نہیں ملی (','⚠️ अनुमति नहीं मिली ('],
+[' naam ka product pehle se hai. Usay Edit karein.',' — a product with this name already exists. Please edit it.',' نام کا پروڈکٹ پہلے سے ہے۔ اسے ایڈٹ کریں۔',' नाम का प्रोडक्ट पहले से है। उसे एडिट करें।'],
+['Ye barcode ','This barcode is already used for ','یہ بارکوڈ ','यह बारकोड '],
+[' ke liye pehle se hai!','!',' کے لیے پہلے سے ہے!',' के लिए पहले से है!'],
+[' delete karna hai?',' — delete it?',' ڈیلیٹ کرنا ہے؟',' डिलीट करना है?'],
+[' ko delete karna hai?',' — delete?',' کو ڈیلیٹ کرنا ہے؟',' को डिलीट करना है?'],
+[' ka stock kafi nahi hai!',' — not enough stock!',' کا اسٹاک کافی نہیں ہے!',' का स्टॉक काफ़ी नहीं है!'],
+[' cart me',' added to cart',' کارٹ میں',' कार्ट में'],
+['Barcode ','Barcode ','بارکوڈ ','बारकोड '],
+[' ka product nahi mila',' — product not found',' کا پروڈکٹ نہیں ملا',' का प्रोडक्ट नहीं मिला'],
+[' ka baqi: Rs ',' balance: Rs ',' کا باقی: Rs ',' का बाकी: Rs '],
+['Kitni raqam mili?','How much was received?','کتنی رقم ملی؟','कितनी राशि मिली?'],
+[' wasool ho gaye ✓',' received ✓',' وصول ہو گئے ✓',' वसूल हुए ✓'],
+[' ka access khatam karna hai? Wo foran login nahi kar sakega.',' — remove access? They will not be able to log in immediately.',' کا رسائی ختم کرنی ہے؟ وہ فوراً لاگ اِن نہیں کر سکے گا۔',' की पहुँच ख़त्म करनी है? वह तुरंत लॉगिन नहीं कर सकेगा।'],
+['Import shuru... (','Import started... (','امپورٹ شروع... (','इम्पोर्ट शुरू... ('],
+[' records)',' records)',' ریکارڈ)',' रिकॉर्ड)'],
+[' products aur ',' products and ',' پروڈکٹس اور ',' प्रोडक्ट और '],
+[' customers import honge.\nJin products ke naam pehle se hain unki qeemat/qty badal jayegi. Jari rakhein?',' customers will be imported.\nExisting products with the same name will have their price/qty overwritten. Continue?',' گاہک امپورٹ ہوں گے۔\nجن پروڈکٹس کے نام پہلے سے ہیں ان کی قیمت/مقدار بدل جائے گی۔ جاری رکھیں؟',' ग्राहक इम्पोर्ट होंगे।\nजिन प्रोडक्ट के नाम पहले से हैं उनकी कीमत/मात्रा बदल जाएगी। जारी रखें?'],
+['Logged in as ','Logged in as ','لاگ اِن بطور ','लॉगिन: '],
+['Udhaar wasooli - ','Credit received - ','ادھار وصولی - ','उधार वसूली - '],
+['Customer: ','','گاہک: ','ग्राहक: '],
+['Code: ','','کوڈ: ','कोड: '],['Qty: ','','مقدار: ','मात्रा: '],['Cost: ','','لاگت: ','लागत: '],['Alert: ','','الرٹ: ','अलर्ट: '],
+['Cart (','','کارٹ (','कार्ट ('],[' items)',' items)',' آئٹمز)',' आइटम)'],
+[' · discount ',' · discount ',' · رعایت ',' · छूट '],
+['(Owner)','','(مالک)','(मालिक)'],['(Manager)','','(منیجر)','(मैनेजर)'],['(Worker)','','(ورکر)','(वर्कर)'],
+['Edit: ','','ایڈٹ: ','एडिट: '],
+['DAILY CLOSING REPORT','','روزانہ کلوزنگ رپورٹ','दैनिक क्लोज़िंग रिपोर्ट'],
+['Transactions:','','لین دین:','लेन-देन:'],['Cash:','','نقد:','नकद:'],['Online:','','آن لائن:','ऑनलाइन:'],
+['Udhaar diya:','Credit given:','ادھار دیا:','उधार दिया:'],['Udhaar wasool hua:','Credit recovered:','ادھار وصول ہوا:','उधार वसूल हुआ:'],
+['Total Sales:','','کل سیلز:','कुल सेल:'],['Purchases:','','خریداری:','खरीद:'],['Net Profit:','','خالص منافع:','शुद्ध मुनाफ़ा:'],
+['Udhaar baqi (kul):','Total credit due:','کل ادھار باقی:','कुल उधार बाकी:']
+]);
+REG.push(
+ [/^Rs (.+) each$/,(L,m)=>({en:m[0],ur:'Rs '+m[1]+' فی عدد',hi:'Rs '+m[1]+' प्रति'})[L]],
+ [/^(\d+) left$/,(L,m)=>({en:m[0],ur:m[1]+' باقی',hi:m[1]+' बचे'})[L]]
+);
+function trStr(s){
+  if(LANG==='rm'||typeof s!=='string'||!s||!/[A-Za-z]/.test(s))return s;
+  const t=s.trim();if(!t)return s;
+  const pm=t.match(/^(⚠️ )(.+)$/s);
+  if(pm&&EX[pm[2]])return s.replace(t,()=>pm[1]+trStr(pm[2]));
+  const e=EX[t];
+  if(e){const v=e[LI[LANG]]||t;return s.replace(t,()=>v)}
+  for(let i=0;i<REG.length;i++){const m=t.match(REG[i][0]);if(m){const v=REG[i][1](LANG,m);if(v)return s.replace(t,()=>v)}}
+  let o=s;const k=LI[LANG];
+  for(let i=0;i<PT.length;i++){const p=PT[i];if(o.indexOf(p[0])>-1)o=o.split(p[0]).join(p[k]||p[0])}
+  return o;
+}
+const _NO=new WeakMap(),_AO=new WeakMap();
+function trNode(n){
+  let r=_NO.get(n);
+  if(!(r&&n.nodeValue===r.t)){r={o:n.nodeValue,t:null};_NO.set(n,r)}
+  const t=trStr(r.o);r.t=t;if(n.nodeValue!==t)n.nodeValue=t;
+}
+function trAttr(el,a){
+  const v=el.getAttribute(a);if(v==null)return;
+  let m=_AO.get(el);if(!m){m={};_AO.set(el,m)}
+  let r=m[a];if(!(r&&v===r.t)){r={o:v,t:null};m[a]=r}
+  const t=trStr(r.o);r.t=t;if(v!==t)el.setAttribute(a,t);
+}
+function trWalk(root){
+  if(!root)return;
+  if(root.nodeType===3){if(root.parentNode&&!/^(SCRIPT|STYLE|TEXTAREA)$/.test(root.parentNode.nodeName))trNode(root);return}
+  if(root.nodeType!==1||/^(SCRIPT|STYLE)$/.test(root.nodeName))return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+  let n=w.currentNode;
+  const doEl=el=>{if(el.hasAttribute&&(el.hasAttribute('placeholder')))trAttr(el,'placeholder');if(el.hasAttribute&&el.hasAttribute('title'))trAttr(el,'title')};
+  doEl(root);
+  while((n=w.nextNode())){
+    if(n.nodeType===3){if(!/^(SCRIPT|STYLE|TEXTAREA)$/.test(n.parentNode.nodeName))trNode(n)}
+    else if(/^(SCRIPT|STYLE)$/.test(n.nodeName)){/* skip */}
+    else doEl(n);
+  }
+}
+let _mo=null;
+function startObserver(){
+  if(_mo)return;
+  _mo=new MutationObserver(ms=>{
+    if(LANG==='rm')return;
+    for(const m of ms){
+      if(m.type==='characterData')trNode(m.target);
+      else if(m.type==='attributes')trAttr(m.target,m.attributeName);
+      else m.addedNodes.forEach(trWalk);
+    }
+  });
+  _mo.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['placeholder','title']});
+}
+const _al=window.alert.bind(window),_cf=window.confirm.bind(window),_pr=window.prompt.bind(window);
+window.alert=m=>_al(trStr(String(m)));
+window.confirm=m=>_cf(trStr(String(m)));
+window.prompt=(m,d)=>_pr(trStr(String(m)),d);
+function renderLangChips(){
+  document.querySelectorAll('.lang-chips').forEach(box=>{
+    box.innerHTML=['rm','en','ur','hi'].map(k=>'<button type="button" class="lang-chip'+(k===LANG?' active':'')+'" data-lang="'+k+'" onclick="setLang(this.dataset.lang)">'+LANGS[k].n+'</button>').join('');
+  });
+}
+function setLang(l,silent){
+  if(!LANGS[l])l='rm';
+  LANG=l;
+  try{localStorage.setItem('multishop_lang',l)}catch(e){}
+  const h=document.documentElement;h.lang=LANGS[l].html;h.dir=LANGS[l].dir;
+  document.body.classList.remove('lang-rm','lang-en','lang-ur','lang-hi');document.body.classList.add('lang-'+l);
+  trWalk(document.body);
+  renderLangChips();
+  if(!silent&&!reduceMotion()){document.body.classList.remove('lang-anim');void document.body.offsetWidth;document.body.classList.add('lang-anim');setTimeout(()=>document.body.classList.remove('lang-anim'),700)}
+  setTimeout(()=>{try{movePill()}catch(e){}},80);
+}
+function initLang(){
+  let l='rm';try{l=localStorage.getItem('multishop_lang')||'rm'}catch(e){}
+  startObserver();setLang(l,true);
+}
+const _trp=todayReportText;todayReportText=function(){return trStr(_trp.apply(this,arguments))};
+
+function makeBubbles(){
+  const o=document.querySelector('#login-screen .orbs');if(!o||o.dataset.b)return;o.dataset.b=1;
+  for(let i=0;i<16;i++){const b=document.createElement('b');const s=6+Math.random()*16;
+    b.style.cssText='left:'+(Math.random()*100)+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+(9+Math.random()*12)+'s;animation-delay:-'+(Math.random()*15)+'s';o.appendChild(b)}
+}
+/* ================= AUTH ================= */
+function togglePassword(id,btn){const i=document.getElementById(id);if(i.type==='password'){i.type='text';btn.innerText='🙈'}else{i.type='password';btn.innerText='👁️'}}
+function showRegisterForm(){document.getElementById('login-form').style.display='none';document.getElementById('register-form').style.display='block'}
+function showLoginForm(){document.getElementById('register-form').style.display='none';document.getElementById('login-form').style.display='block'}
+
+function resetState(){
+  currentUid='';currentEmail='';currentName='';activeOwnerUid='';
+  inventoryStock=Object.create(null);productsById={};customers=Object.create(null);
+  transactionHistory=[];staffMembers=[];daysData={};cartItems={};
+  Object.keys(_shown).forEach(k=>delete _shown[k]);_chartSig='';_seen.clear();_prevTab=null;
+}
+function showLoginScreen(){
+  window._authResolved=true;
+  document.getElementById('boot-msg').style.display='none';
+  const ls0=document.getElementById('login-screen');
+  if(window._uiShown&&ls0.style.display!=='none'&&(document.getElementById('welcome-pane').style.display!=='none'||document.getElementById('auth-pane').style.display!=='none')){document.getElementById('userPass').value='';return}
+  window._uiShown=false;
+  ['settings-section','security-sub-screen','appearance-sub-screen','dashboard-screen'].forEach(i=>document.getElementById(i).style.display='none');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('userPass').value='';
+  authFormsVisible(true);showLoginForm();
+}
+
+async function onAuthChange(user){
+  window._authResolved=true;document.getElementById('boot-msg').style.display='none';
+  if(registering)return;
+  if(!user){stopListeners();resetState();updateFloatingCart();showLoginScreen();return}
+  if(user.uid===currentUid&&unsubs.length)return;
+  try{
+    const uref=fb.F.doc(fb.db,'users',user.uid);
+    let snap;
+    try{snap=await Promise.race([fb.F.getDoc(uref),new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),12000))])}
+    catch(e1){snap=await fb.F.getDocFromCache(uref)}
+    if(!snap.exists()){
+      alert('Ye account active nahi hai (owner ne hata diya ho sakta hai, ya register mukammal nahi hua).');
+      await fb.Au.signOut(fb.auth);return;
+    }
+    startSession(user,snap.data());
+  }catch(e){
+    console.error(e);
+    alert('Profile load nahi ho saka: '+(e.message||e)+'\nInternet check karein.');
+    showLoginScreen();
+  }
+}
+
+async function registerNewOwner(ev){
+  ev.preventDefault();
+  const btn=document.querySelector('#register-form button[type=submit]');
+  setLoading(btn,true);
+  try{await _registerNewOwner()}finally{setLoading(btn,false)}
+}
+async function _registerNewOwner(){
+  const email=document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('regPass').value;
+  if(!email||!pass)return authFail('reg','Sab fields bharein!');
+  if(pass.length<8)return authFail('reg','Password kam az kam 8 characters ka ho!');
+  if(!fb)return authFail('reg','Internet check karein.');
+  registering=true;let cred=null;
+  try{
+    cred=await fb.Au.createUserWithEmailAndPassword(fb.auth,email,pass);
+    const uid=cred.user.uid;
+    await fb.F.setDoc(fb.F.doc(fb.db,'users',uid),{name:email.split('@')[0],email,role:'Owner',ownerUid:uid,createdAt:Date.now()});
+    await fb.F.setDoc(fb.F.doc(fb.db,'stores',uid,'meta','store'),{storeName:'My Shop'});
+  }catch(e){
+    registering=false;
+    if(cred&&cred.user){try{await fb.Au.deleteUser(cred.user)}catch(x){try{await fb.Au.signOut(fb.auth)}catch(y){}}}
+    return authFail('reg',e.code&&e.code.startsWith('auth/')?authErr(e):'Account nahi ban saka: '+(e.code==='permission-denied'?'Firestore rules publish nahi hue (SETUP guide dekhein).':e.message));
+  }
+  registering=false;
+  onAuthChange(fb.auth.currentUser);
+}
+
+async function loginUser(ev){
+  ev.preventDefault();
+  const email=document.getElementById('userEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('userPass').value;
+  if(!email||!pass)return authFail('login','Email aur password dono likhein.');
+  if(!fb)return authFail('login','Internet check karein.');
+  const btn=document.querySelector('#login-form button[type=submit]');
+  setLoading(btn,true);
+  try{await fb.Au.signInWithEmailAndPassword(fb.auth,email,pass)}
+  catch(e){authFail('login',authErr(e))}
+  finally{setLoading(btn,false)}
+}
+async function forgotPassword(){
+  const email=document.getElementById('userEmail').value.trim().toLowerCase();
+  if(!email)return alert('Pehle upar Email likhein, phir "Password bhool gaye" dabayein.');
+  try{await fb.Au.sendPasswordResetEmail(fb.auth,email);alert('Agar ye email registered hai to reset ka link bhej diya gaya hai. Inbox/Spam check karein.')}
+  catch(e){alert(authErr(e))}
+}
+
+function startSession(user,p){
+  currentUid=user.uid;currentEmail=user.email||p.email||'';currentName=p.name||currentEmail.split('@')[0];
+  currentUserRole=p.role||'Worker';activeOwnerUid=p.ownerUid;
+  const ls=document.getElementById('login-screen');
+  if(!reduceMotion()&&ls.style.display!=='none'){ls.classList.add('leaving');setTimeout(()=>{ls.style.display='none';ls.classList.remove('leaving')},400)}
+  else ls.style.display='none';
+  document.getElementById('dashboard-screen').style.display='block';
+  showSkeletons();
+  document.getElementById('welcome-msg').innerText='Logged in as '+currentUserRole+': '+currentEmail;
+  setupRoleUI();attachListeners();updateNetBadge();
+}
+
+function setupRoleUI(){
+  const allowed=ROLE_TABS[currentUserRole]||ROLE_TABS.Worker;
+  ['dashboard','inventory','sell','purchase','udhaar','staff','mail'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=allowed.includes(t)?'flex':'none';
+  });
+  document.querySelectorAll('.owner-only').forEach(el=>el.style.display=currentUserRole==='Owner'?'':'none');
+  showTab(allowed.includes('dashboard')?'dashboard':'sell');
+}
+
+async function logoutUser(){
+  stopListeners();
+  try{await fb.Au.signOut(fb.auth)}catch(e){}
+}
+
+/* ================= LIVE LISTENERS ================= */
+function stopListeners(){unsubs.forEach(u=>{try{u()}catch(e){}});unsubs=[]}
+function attachListeners(){
+  stopListeners();
+  const f=fb.F;
+  const err=n=>e=>{console.warn(n,e);if(e&&e.code==='permission-denied')toast('⚠️ Ijazat nahi mili ('+n+')')};
+
+  unsubs.push(f.onSnapshot(f.doc(fb.db,'users',currentUid),s=>{
+    if(!s.exists()){if(!s.metadata.fromCache){alert('Aap ka account hata diya gaya hai.');fb.Au.signOut(fb.auth)}return}
+    const p=s.data();
+    if(p.role&&p.role!==currentUserRole){currentUserRole=p.role;setupRoleUI()}
+  },err('profile')));
+
+  unsubs.push(f.onSnapshot(dref('meta','store'),s=>{
+    if(s.exists()){storeName=s.data().storeName||storeName}
+    document.getElementById('navbar-store-name').innerText=storeName;
+  },err('store')));
+
+  unsubs.push(f.onSnapshot(ccol('products'),s=>{
+    const inv=Object.create(null),byId={};
+    s.forEach(d=>{const v=d.data();const o=Object.assign({id:d.id},v);inv[v.name]=o;byId[d.id]=o});
+    inventoryStock=inv;productsById=byId;
+    renderInventoryList();filterPosItems();updateDashboard();
+  },err('products')));
+
+  unsubs.push(f.onSnapshot(ccol('customers'),s=>{
+    const c=Object.create(null);
+    s.forEach(d=>{const v=d.data();c[v.name]=Object.assign({id:d.id},v)});
+    customers=c;renderCustomers();updateDashboard();
+  },err('customers')));
+
+  unsubs.push(f.onSnapshot(f.query(ccol('transactions'),f.orderBy('ts','desc'),f.limit(200)),{includeMetadataChanges:true},s=>{
+    transactionHistory=s.docs.map(d=>Object.assign({},d.data(),{id:d.id}));
+    pendingWrites=s.metadata.hasPendingWrites;
+    renderAllLists();updateNetBadge();
+  },err('transactions')));
+
+  unsubs.push(f.onSnapshot(f.query(ccol('days'),f.orderBy(f.documentId(),'desc'),f.limit(7)),s=>{
+    const d={};s.forEach(x=>d[x.id]=x.data());daysData=d;updateDashboard();
+  },err('days')));
+
+  if(currentUserRole==='Owner'){
+    unsubs.push(f.onSnapshot(f.query(f.collection(fb.db,'users'),f.where('ownerUid','==',currentUid)),s=>{
+      staffMembers=s.docs.filter(d=>d.id!==currentUid).map(d=>Object.assign({uid:d.id},d.data()));
+      renderStaffList();updateDashboard();
+    },err('staff')));
+  }
+}
+
+function updateNetBadge(){
+  const el=document.getElementById('net-badge');if(!el)return;
+  if(!navigator.onLine){el.innerText='🟠 Offline';el.title='Internet nahi — sab kuch save ho raha hai, wapas aane par sync hoga'}
+  else if(pendingWrites){el.innerText='🔄 Sync';el.title='Server par save ho raha hai'}
+  else{el.innerText='🟢 Online';el.title='Sab sync hai'}
+}
+
+/* ================= SETTINGS ================= */
+function openSettingsScreen(){
+  document.getElementById('dashboard-screen').style.display='none';
+  document.getElementById('settings-section').style.display='block';
+  document.getElementById('settings-store-subtitle').innerText=storeName;
+  document.getElementById('settings-profile-name').innerText=currentName;
+  document.getElementById('settings-profile-email').innerText=currentEmail+' ('+currentUserRole+')';
+  document.getElementById('settings-profile-initial').innerText=(currentName||'?').charAt(0).toUpperCase();
+}
+function closeSettingsScreen(){document.getElementById('settings-section').style.display='none';document.getElementById('dashboard-screen').style.display='block'}
+function openSecurityScreen(){document.getElementById('settings-section').style.display='none';document.getElementById('security-sub-screen').style.display='block'}
+function closeSecurityScreen(){document.getElementById('security-sub-screen').style.display='none';document.getElementById('settings-section').style.display='block'}
+function openAppearanceScreen(){document.getElementById('settings-section').style.display='none';document.getElementById('appearance-sub-screen').style.display='block'}
+function closeAppearanceScreen(){document.getElementById('appearance-sub-screen').style.display='none';document.getElementById('settings-section').style.display='block'}
+
+function setAppTheme(theme,save=true){
+  if(save)setSafe('storepix_theme',theme);
+  document.body.classList.toggle('light-theme',theme==='light');
+  document.body.classList.toggle('dark-theme',theme!=='light');
+  document.getElementById('theme-light').classList.toggle('active',theme==='light');
+  document.getElementById('theme-dark').classList.toggle('active',theme!=='light');
+  document.getElementById('radio-light').innerText=theme==='light'?'✓':'';
+  document.getElementById('radio-dark').innerText=theme!=='light'?'✓':'';
+}
+function applyBrand(p,a){document.body.style.setProperty('--brand-primary',p);document.body.style.setProperty('--brand-accent',a)}
+function setBrandColor(p,a,btn){
+  applyBrand(p,a);setSafe('storepix_brand',JSON.stringify({p,a}));
+  document.querySelectorAll('.color-circle-btn').forEach(b=>{b.classList.remove('active');b.innerText=''});
+  btn.classList.add('active');btn.innerText='✓';
+}
+
+async function executePasswordChange(){
+  const cur=document.getElementById('current-pass-input').value;
+  const np=document.getElementById('new-pass-input').value;
+  if(np.length<8)return alert('Naya password kam az kam 8 characters ka ho!');
+  const user=fb.auth.currentUser;if(!user)return;
+  try{
+    await fb.Au.reauthenticateWithCredential(user,fb.Au.EmailAuthProvider.credential(user.email,cur));
+    await fb.Au.updatePassword(user,np);
+  }catch(e){return alert(authErr(e))}
+  document.getElementById('current-pass-input').value='';document.getElementById('new-pass-input').value='';
+  toast('Password update ho gaya ✓');closeSecurityScreen();
+}
+function promptStoreNameChange(){
+  if(!can('Owner'))return;
+  const n=prompt('Store name:',storeName);if(!n||!n.trim())return;
+  wr(fb.F.setDoc(dref('meta','store'),{storeName:n.trim()},{merge:true}));toast('Updated ✓');
+}
+
+/* ================= NAVIGATION ================= */
+function showTab(name){
+  const allowed=ROLE_TABS[currentUserRole]||ROLE_TABS.Worker;
+  if(!allowed.includes(name))name=allowed[0];
+  const dir=(_prevTab&&TAB_ORDER.indexOf(name)<TAB_ORDER.indexOf(_prevTab))?'dirL':'dirR';
+  TAB_ORDER.forEach(t=>{
+    const el=document.getElementById('section-'+t),btn=document.getElementById('tab-'+t);
+    if(el){
+      el.style.display=(t===name)?'block':'none';
+      el.classList.remove('dirL','dirR');
+      if(t===name&&_prevTab&&_prevTab!==name){void el.offsetWidth;el.classList.add(dir)}
+    }
+    if(btn)btn.classList.toggle('active',t===name);
+  });
+  _prevTab=name;
+  updateFloatingCart();
+  movePill();
+}
+
+/* ================= DASHBOARD ================= */
+const BLANK_DAY={sales:0,purchases:0,profit:0,cash:0,online:0,credit:0,recovered:0,count:0};
+const _shown={},_tok={};let _chartSig='';
+function animateNumber(id,to){
+  const el=document.getElementById(id);if(!el)return;
+  const from=_shown[id]||0;_shown[id]=to;
+  const tok=_tok[id]=(_tok[id]||0)+1;
+  if(from===to||window.matchMedia('(prefers-reduced-motion: reduce)').matches){el.innerText=to;return}
+  const t0=performance.now(),dur=650;
+  (function step(t){
+    if(_tok[id]!==tok)return;
+    const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);
+    el.innerText=p<1?fmt(from+(to-from)*e):to;
+    if(p<1)requestAnimationFrame(step);
+  })(t0);
+}
+const getToday=()=>Object.assign({},BLANK_DAY,daysData[dayKey()]||{});
+function outstandingUdhaar(){return Object.values(customers).reduce((s,c)=>s+(c.balance||0),0)}
+const lowOf=i=>(i.low==null||isNaN(i.low))?5:i.low;
+const isLow=i=>i.qty<=lowOf(i);
+
+function updateDashboard(){
+  if(!activeOwnerUid)return;
+  const t=getToday();
+  animateNumber('dash-sales',fmt(t.sales));
+  animateNumber('dash-purchases',fmt(t.purchases));
+  animateNumber('dash-profit',fmt(t.profit));
+  animateNumber('dash-staff',staffMembers.length);
+  animateNumber('dash-udhaar',fmt(outstandingUdhaar()));
+  animateNumber('dash-low',Object.values(inventoryStock).filter(isLow).length);
+  renderChart();
+}
+function renderChart(){
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(Date.now()-i*864e5),k=dayKey(d);
+    days.push({lbl:d.toLocaleDateString('en',{weekday:'short'}),val:fmt((daysData[k]||{}).sales||0)});
+  }
+  const sig=JSON.stringify(days.map(d=>d.val));
+  if(sig===_chartSig)return;_chartSig=sig;
+  const max=Math.max(1,...days.map(d=>d.val));
+  document.getElementById('sales-chart').innerHTML=days.map((d,i)=>
+    `<div class="chart-col"><div class="chart-val">${d.val}</div><div class="chart-bar" style="height:${Math.round(d.val/max*80)}%;animation-delay:${i*70}ms"></div><div class="chart-lbl">${esc(d.lbl)}</div></div>`).join('');
+}
+
+/* ================= INVENTORY ================= */
+function renderInventoryList(){
+  const list=document.getElementById('inventory-list');if(!list)return;
+  const q=(document.getElementById('inv-search').value||'').toLowerCase();
+  let html='';
+  for(const name in inventoryStock){
+    const it=inventoryStock[name];
+    if(q&&!name.toLowerCase().includes(q)&&!String(it.code||'').toLowerCase().includes(q))continue;
+    html+=`<div class="list-item${ic('inv:'+name)}"><div><strong>${esc(name)}</strong> ${isLow(it)?`<span class="low-stock-badge">⚠️ Low (${it.qty})</span>`:''}<br><small>Code: ${esc(it.code||'N/A')} | Qty: ${it.qty} | Cost: ${fmt(it.costPrice)} | Alert: ${lowOf(it)}</small></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><strong>Rs ${it.sellPrice}</strong>
+      <div style="display:flex;gap:6px"><button class="edit-btn" data-name="${esc(name)}" onclick="editInventoryItem(this.dataset.name)">Edit</button>
+      <button class="del-btn" data-name="${esc(name)}" onclick="deleteInventoryItem(this.dataset.name)">Delete</button></div></div></div>`;
+  }
+  list.innerHTML=html||'<p style="color:var(--sub-text);margin-top:10px">Koi product nahi.</p>';
+  document.getElementById('inventory-datalist').innerHTML=Object.keys(inventoryStock).map(n=>`<option value="${esc(n)}">`).join('');
+}
+
+function addInventoryItem(){
+  if(!can('Owner','Manager'))return alert('Sirf Owner/Manager ye kar sakta hai!');
+  const name=document.getElementById('inv-name').value.trim();
+  const code=document.getElementById('inv-code').value.trim();
+  const cost=parseFloat(document.getElementById('inv-cost').value);
+  const price=parseFloat(document.getElementById('inv-price').value);
+  const qty=parseInt(document.getElementById('inv-qty').value);
+  const lowRaw=document.getElementById('inv-low').value;
+  const low=lowRaw===''?5:parseInt(lowRaw);
+  if(!name||isNaN(cost)||isNaN(price)||isNaN(qty)||isNaN(low))return alert('Sab fields bharein!');
+  if(cost<0||price<0||qty<0||low<0)return alert('Negative qeemat/quantity nahi ho sakti!');
+  const editing=editingProduct?inventoryStock[editingProduct]:null;
+  const same=inventoryStock[name];
+  if(same&&(!editing||same.id!==editing.id))return alert('"'+name+'" naam ka product pehle se hai. Usay Edit karein.');
+  if(code){const dup=Object.keys(inventoryStock).find(n=>inventoryStock[n].code===code&&(!editing||inventoryStock[n].id!==editing.id));if(dup)return alert('Ye barcode "'+dup+'" ke liye pehle se hai!')}
+  const id=editing?editing.id:newId('products');
+  if(editing&&editingProduct!==name&&cartItems[editingProduct]){delete cartItems[editingProduct];updateFloatingCart()}
+  wr(fb.F.setDoc(dref('products',id),{name,code,costPrice:cost,sellPrice:price,qty,low}));
+  resetInventoryForm();toast('Product save ho gaya ✓');
+}
+function editInventoryItem(name){
+  const it=inventoryStock[name];if(!it)return;
+  editingProduct=name;
+  document.getElementById('inv-name').value=name;document.getElementById('inv-code').value=it.code||'';
+  document.getElementById('inv-cost').value=it.costPrice;document.getElementById('inv-price').value=it.sellPrice;
+  document.getElementById('inv-qty').value=it.qty;document.getElementById('inv-low').value=lowOf(it);
+  document.getElementById('inv-form-title').innerText='Edit: '+name;
+  document.getElementById('inv-cancel-btn').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetInventoryForm(){
+  editingProduct=null;
+  ['inv-name','inv-code','inv-cost','inv-price','inv-qty','inv-low'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('inv-form-title').innerText='Inventory Stock';
+  document.getElementById('inv-cancel-btn').style.display='none';
+}
+function deleteInventoryItem(name){
+  if(!can('Owner','Manager'))return alert('Sirf Owner/Manager ye kar sakta hai!');
+  const it=inventoryStock[name];if(!it)return;
+  if(!confirm('"'+name+'" delete karna hai?'))return;
+  delete cartItems[name];updateFloatingCart();
+  wr(fb.F.deleteDoc(dref('products',it.id)));
+}
+
+/* ================= POS ================= */
+function renderPosProducts(filter=''){
+  const grid=document.getElementById('pos-products-grid');if(!grid)return;
+  const f=filter.toLowerCase();let html='',has=false;
+  for(const name in inventoryStock){
+    const it=inventoryStock[name];
+    if(f&&!name.toLowerCase().includes(f)&&!String(it.code||'').toLowerCase().includes(f))continue;
+    has=true;
+    const tag=it.qty<=0?'<span class="low-stock-badge">Khatam</span>':(isLow(it)?`<span class="low-stock-badge">Low: ${it.qty}</span>`:`${it.qty} left`);
+    html+=`<div class="pos-card${ic('pos:'+name)}" data-name="${esc(name)}" onclick="addToCart(this.dataset.name,this)">
+      <div class="pos-card-letter">${esc(name.charAt(0).toUpperCase())}</div>
+      <div><div class="pos-card-title">${esc(name)}</div><div class="pos-card-price">Rs ${it.sellPrice}</div><div class="pos-card-left">${tag}</div></div>
+      <button class="pos-add-btn">+</button></div>`;
+  }
+  grid.innerHTML=has?html:'<p style="color:var(--sub-text)">Koi product nahi mila.</p>';
+}
+function filterPosItems(){const el=document.getElementById('pos-search');renderPosProducts(el?el.value:'')}
+function posSearchKey(e){
+  if(e.key!=='Enter')return;
+  const v=e.target.value.trim();if(!v)return;
+  const name=Object.keys(inventoryStock).find(n=>inventoryStock[n].code===v);
+  if(name){addToCart(name);e.target.value='';filterPosItems()}
+}
+
+function addToCart(name,srcEl){
+  const it=inventoryStock[name];
+  if(!it||it.qty<=0)return toast('Stock khatam hai!');
+  if(!cartItems[name])cartItems[name]={price:it.sellPrice,cost:it.costPrice,qty:1};
+  else{if(cartItems[name].qty>=it.qty)return toast('Stock ki had poori!');cartItems[name].qty++}
+  updateFloatingCart();bumpCart();flyToCart(srcEl);toast('✓ '+name+' cart me');
+}
+function bumpCart(){
+  const b=document.getElementById('cart-count-badge');
+  b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');
+}
+function updateFloatingCart(){
+  let count=0,total=0;
+  for(const n in cartItems){count+=cartItems[n].qty;total+=cartItems[n].price*cartItems[n].qty}
+  const bar=document.getElementById('floating-cart');
+  const onSell=document.getElementById('section-sell').style.display==='block';
+  if(count>0&&onSell){
+    document.getElementById('cart-count-badge').innerText=count;
+    document.getElementById('cart-total-price').innerText='Rs '+fmt(total);
+    bar.classList.add('show');
+  }else bar.classList.remove('show');
+}
+
+function openCartModal(){
+  const container=document.getElementById('cart-items-container');
+  let html='',count=0,sub=0;
+  for(const n in cartItems){
+    const o=cartItems[n];count+=o.qty;const s=o.price*o.qty;sub+=s;
+    html+=`<div class="cart-item-card"><div class="cart-item-top"><div><div class="cart-item-title">${esc(n)}</div><div class="cart-item-price-sub">Rs ${o.price} each</div></div>
+      <button class="cart-trash-btn" data-name="${esc(n)}" onclick="deleteCartItem(this.dataset.name)">🗑️</button></div>
+      <div class="cart-qty-row"><div class="qty-ctrl-group">
+      <button class="qty-btn-circle" data-name="${esc(n)}" onclick="changeCartQty(this.dataset.name,-1)">−</button>
+      <b style="font-size:18px">${o.qty}</b>
+      <button class="qty-btn-circle" data-name="${esc(n)}" onclick="changeCartQty(this.dataset.name,1)">+</button></div>
+      <b style="font-size:18px;color:#0f172a">Rs ${fmt(s)}</b></div></div>`;
+  }
+  container.innerHTML=html;currentSubtotal=sub;
+  document.getElementById('cart-modal-title').innerText='Cart ('+count+' items)';
+  document.getElementById('customer-datalist').innerHTML=Object.keys(customers).map(c=>`<option value="${esc(c)}">`).join('');
+  recalcCart(true);
+  document.getElementById('cart-modal').style.display='flex';
+}
+function closeCartModal(){document.getElementById('cart-modal').style.display='none'}
+
+function getDiscount(){return Math.min(Math.max(0,num(document.getElementById('discount-input').value)),currentSubtotal)}
+function recalcCart(resetReceived){
+  currentCartTotal=fmt(currentSubtotal-getDiscount());
+  document.getElementById('summary-sub').innerText='Rs '+fmt(currentSubtotal);
+  document.getElementById('summary-total').innerText='Rs '+currentCartTotal;
+  document.getElementById('btn-total-text').innerText='Rs '+currentCartTotal;
+  if(resetReceived===true||document.getElementById('btn-exact').classList.contains('active'))
+    document.getElementById('amount-received-input').value=currentCartTotal;
+  onAmountReceivedInput();onUdhaarPaidInput();
+}
+function onAmountReceivedInput(){
+  const rec=num(document.getElementById('amount-received-input').value);
+  document.getElementById('change-display-val').innerText='Rs '+fmt(Math.max(0,rec-currentCartTotal));
+  const exact=document.getElementById('btn-exact');
+  exact.classList.toggle('active',rec===currentCartTotal);
+  document.querySelectorAll('.quick-cash-btn').forEach(b=>{if(b!==exact)b.classList.remove('active')});
+}
+function setQuickCash(v){
+  document.getElementById('amount-received-input').value=(v==='exact')?currentCartTotal:v;
+  onAmountReceivedInput();
+}
+function onUdhaarPaidInput(){
+  const paid=Math.min(Math.max(0,num(document.getElementById('udhaar-paid').value)),currentCartTotal);
+  document.getElementById('udhaar-due-val').innerText='Rs '+fmt(currentCartTotal-paid);
+}
+function changeCartQty(name,delta){
+  const item=cartItems[name];if(!item)return;
+  const nq=item.qty+delta,limit=inventoryStock[name]?inventoryStock[name].qty:0;
+  if(nq<=0)delete cartItems[name];
+  else if(nq>limit)return toast('Stock se zyada nahi ho sakta!');
+  else item.qty=nq;
+  updateFloatingCart();
+  if(!Object.keys(cartItems).length)closeCartModal();else openCartModal();
+}
+function deleteCartItem(n){delete cartItems[n];updateFloatingCart();if(!Object.keys(cartItems).length)closeCartModal();else openCartModal()}
+function setPayMethod(m,btn){
+  selectedPaymentMethod=m;
+  btn.parentElement.querySelectorAll('.pay-method-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cash-sub-options').style.display=m==='Cash'?'block':'none';
+  document.getElementById('online-sub-options').style.display=m==='Online'?'block':'none';
+  document.getElementById('udhaar-sub-options').style.display=m==='Udhaar'?'block':'none';
+}
+function setOnlineSub(sub,btn){
+  selectedOnlineSub=sub;
+  btn.parentElement.querySelectorAll('.pay-method-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function completeCartSale(){
+  if(!Object.keys(cartItems).length)return;
+  for(const n in cartItems){
+    if(!inventoryStock[n]||inventoryStock[n].qty<cartItems[n].qty)return alert('"'+n+'" ka stock kafi nahi hai!');
+  }
+  const discount=fmt(getDiscount());
+  const total=fmt(currentSubtotal-discount);
+  let paid=total,credit=0,customer='',cashGiven=null,change=0;
+  if(selectedPaymentMethod==='Udhaar'){
+    customer=document.getElementById('udhaar-customer').value.trim();
+    if(!customer)return alert('Udhaar ke liye customer ka naam likhein!');
+    paid=Math.min(Math.max(0,num(document.getElementById('udhaar-paid').value)),total);
+    credit=fmt(total-paid);
+  }else if(selectedPaymentMethod==='Cash'){
+    cashGiven=num(document.getElementById('amount-received-input').value);
+    if(cashGiven<total)return alert('Receive ki gayi raqam bill se kam hai! Kam raqam ke liye Udhaar chunein.');
+    change=fmt(cashGiven-total);
+  }
+  const methodStr=selectedPaymentMethod==='Online'?'Online ('+selectedOnlineSub+')':selectedPaymentMethod;
+  const timeStr=new Date().toLocaleString();
+  const day=dayKey();
+  const b=newBatch();
+  const items=[];let totalCost=0;
+  for(const n in cartItems){
+    const o=cartItems[n],p=inventoryStock[n];
+    totalCost+=o.cost*o.qty;
+    items.push({pid:p.id,name:n,qty:o.qty,price:o.price,cost:o.cost});
+    b.update(dref('products',p.id),{qty:inc(-o.qty)});
+  }
+  const profit=fmt(total-totalCost);
+  const cashPart=selectedPaymentMethod==='Cash'?total:(selectedPaymentMethod==='Udhaar'?paid:0);
+  const onlinePart=selectedPaymentMethod==='Online'?total:0;
+  const txId=newId('transactions');
+  b.set(dref('transactions',txId),{type:'SELL',day,ts:Date.now(),date:timeStr,
+    itemName:items.map(i=>i.name+' x'+i.qty).join(', '),items,price:total,subtotal:fmt(currentSubtotal),discount,profit,
+    color:'#38bdf8',method:methodStr,customer,credit,cashPart,onlinePart,returned:false,by:currentUid,byName:currentName});
+  b.set(dref('days',day),{sales:inc(total),profit:inc(profit),cash:inc(cashPart),online:inc(onlinePart),credit:inc(credit),count:inc(1)},{merge:true});
+  if(customer){
+    const c=customers[customer],cid=c?c.id:newId('customers');
+    const upd={name:customer,balance:inc(credit),log:fb.F.arrayUnion({date:timeStr,type:'SALE',amount:credit})};
+    if(!c)upd.phone='';
+    b.set(dref('customers',cid),upd,{merge:true});
+  }
+  commit(b);
+
+  // receipt
+  document.getElementById('rec-store-name').innerText=storeName;
+  document.getElementById('rec-datetime').innerText=timeStr;
+  document.getElementById('rec-customer').innerText=customer?('Customer: '+customer):'';
+  document.getElementById('rec-items-tbody').innerHTML=items.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.qty}</td><td>Rs ${fmt(i.price*i.qty)}</td></tr>`).join('');
+  let tot='';
+  const line=(a,v,bold)=>`<div class="rec-line" style="${bold?'font-weight:bold;font-size:15px':''}"><span>${a}</span><span>${v}</span></div>`;
+  if(discount>0){tot+=line('Subtotal','Rs '+fmt(currentSubtotal))+line('Discount','- Rs '+discount)}
+  tot+=line('TOTAL','Rs '+total,true)+line('Payment',esc(methodStr));
+  if(cashGiven!==null)tot+=line('Received','Rs '+cashGiven)+line('Change','Rs '+change);
+  if(customer)tot+=line('Paid now','Rs '+fmt(paid))+line('Udhaar baqi','Rs '+credit);
+  document.getElementById('rec-totals').innerHTML=tot;
+  lastReceiptText=buildReceiptText(items,total,discount,methodStr,customer,paid,credit,timeStr);
+
+  cartItems={};
+  document.getElementById('discount-input').value=0;
+  document.getElementById('udhaar-paid').value=0;document.getElementById('udhaar-customer').value='';
+  closeCartModal();updateFloatingCart();
+  document.getElementById('receipt-modal').style.display='flex';
+  confetti();
+}
+
+function buildReceiptText(items,total,discount,method,customer,paid,credit,time){
+  let t='*'+storeName+'*\n'+time+'\n';
+  if(customer)t+='Customer: '+customer+'\n';
+  t+='------------------\n';
+  items.forEach(i=>t+=i.name+' x'+i.qty+' = Rs '+fmt(i.price*i.qty)+'\n');
+  t+='------------------\n';
+  if(discount>0)t+='Discount: Rs '+discount+'\n';
+  t+='TOTAL: Rs '+total+'\nPayment: '+method+'\n';
+  if(customer)t+='Paid: Rs '+fmt(paid)+' | Udhaar baqi: Rs '+credit+'\n';
+  return t+'\nShukriya!';
+}
+function closeReceiptModal(){document.getElementById('receipt-modal').style.display='none'}
+function printReceipt(){window.print()}
+function shareReceiptWhatsApp(){window.open('https://wa.me/?text='+encodeURIComponent(lastReceiptText),'_blank')}
+
+/* ================= BARCODE SCANNER ================= */
+async function openScanner(){
+  if(!('BarcodeDetector' in window)||!navigator.mediaDevices)
+    return alert('Is browser me camera scanner support nahi hai (Chrome Android use karein). USB scanner ya barcode manually likh kar Enter dabayein.');
+  try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})}
+  catch(e){return alert('Camera ki ijazat nahi mili!')}
+  const video=document.getElementById('scan-video');
+  video.srcObject=scanStream;await video.play();
+  document.getElementById('scan-modal').style.display='flex';
+  const det=new BarcodeDetector();
+  scanTimer=setInterval(async()=>{
+    try{
+      const codes=await det.detect(video);
+      if(codes.length){
+        const val=codes[0].rawValue;
+        const name=Object.keys(inventoryStock).find(n=>inventoryStock[n].code===val);
+        closeScanner();
+        if(name)addToCart(name);else toast('Barcode '+val+' ka product nahi mila');
+      }
+    }catch(e){}
+  },350);
+}
+function closeScanner(){
+  clearInterval(scanTimer);
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
+  document.getElementById('scan-modal').style.display='none';
+}
+
+/* ================= PURCHASE ================= */
+function addPurchaseItem(){
+  if(!can('Owner','Manager'))return alert('Sirf Owner/Manager ye kar sakta hai!');
+  const name=document.getElementById('buy-name').value.trim();
+  const supplier=document.getElementById('buy-supplier').value.trim();
+  const price=parseFloat(document.getElementById('buy-price').value);
+  const qty=parseInt(document.getElementById('buy-qty').value);
+  const sellRaw=document.getElementById('buy-sell').value;
+  if(!name||isNaN(price)||isNaN(qty)||price<0||qty<=0)return alert('Naam, sahi cost aur quantity likhein!');
+  const b=newBatch();
+  const ex=inventoryStock[name];
+  let pid;
+  if(ex){
+    pid=ex.id;
+    const oldQty=Math.max(0,ex.qty);
+    const newCost=fmt(((ex.costPrice*oldQty)+(price*qty))/(oldQty+qty));
+    const upd={costPrice:newCost,qty:inc(qty)};
+    if(sellRaw!==''&&!isNaN(parseFloat(sellRaw)))upd.sellPrice=parseFloat(sellRaw);
+    b.update(dref('products',pid),upd);
+  }else{
+    const sp=sellRaw===''?NaN:parseFloat(sellRaw);
+    if(isNaN(sp))return alert('Naya item hai, uska selling price bhi likhein!');
+    pid=newId('products');
+    b.set(dref('products',pid),{name,code:'',costPrice:price,sellPrice:sp,qty,low:5});
+  }
+  const total=fmt(price*qty),day=dayKey();
+  b.set(dref('transactions',newId('transactions')),{type:'PURCHASE',day,ts:Date.now(),itemName:name+' x'+qty,pname:name,pid,qty,unitCost:price,supplier,
+    price:total,color:'#ef4444',method:'Purchase',date:new Date().toLocaleString(),returned:false,by:currentUid,byName:currentName});
+  b.set(dref('days',day),{purchases:inc(total)},{merge:true});
+  commit(b);
+  ['buy-name','buy-supplier','buy-price','buy-qty','buy-sell'].forEach(i=>document.getElementById(i).value='');
+  toast('Purchase record ho gayi, stock barh gaya ✓');
+}
+
+/* ================= HISTORY / RETURNS ================= */
+function addReverseToBatch(b,tx){
+  if(tx.type==='SELL'){
+    (tx.items||[]).forEach(i=>{if(productsById[i.pid])b.update(dref('products',i.pid),{qty:inc(i.qty)})});
+    b.set(dref('days',tx.day),{sales:inc(-tx.price),profit:inc(-(tx.profit||0)),cash:inc(-(tx.cashPart||0)),online:inc(-(tx.onlinePart||0)),credit:inc(-(tx.credit||0)),count:inc(-1)},{merge:true});
+    const c=tx.customer?customers[tx.customer]:null;
+    if(c&&tx.credit)b.update(dref('customers',c.id),{balance:inc(-tx.credit),log:fb.F.arrayUnion({date:new Date().toLocaleString(),type:'RETURN',amount:-tx.credit})});
+  }else if(tx.type==='PURCHASE'){
+    b.set(dref('days',tx.day),{purchases:inc(-tx.price)},{merge:true});
+    const p=productsById[tx.pid];
+    if(p)b.update(dref('products',p.id),{qty:inc(-Math.min(tx.qty||0,Math.max(0,p.qty)))});
+  }else if(tx.type==='UDHAAR-PAID'){
+    b.set(dref('days',tx.day),{recovered:inc(-tx.price)},{merge:true});
+    const c=tx.customer?customers[tx.customer]:null;
+    if(c)b.update(dref('customers',c.id),{balance:inc(tx.price),log:fb.F.arrayUnion({date:new Date().toLocaleString(),type:'PAYMENT-CANCELLED',amount:tx.price})});
+  }
+}
+function returnSale(id){
+  if(!can('Owner','Manager'))return alert('Sirf Owner/Manager return le sakta hai!');
+  const tx=transactionHistory.find(t=>t.id===id);if(!tx||tx.type!=='SELL'||tx.returned)return;
+  if(!confirm('Ye sale return karni hai? Stock wapis aa jayega aur sales kam hongi.'))return;
+  const b=newBatch();
+  addReverseToBatch(b,tx);
+  b.update(dref('transactions',id),{returned:true,color:'#a1a1aa'});
+  commit(b);toast('Return ho gaya ✓');
+}
+function deleteTx(id){
+  if(!can('Owner'))return alert('Sirf Owner transaction delete kar sakta hai!');
+  const tx=transactionHistory.find(t=>t.id===id);if(!tx)return;
+  if(!confirm('Ye transaction delete karni hai? Record hamesha ke liye hat jayega.'))return;
+  const b=newBatch();
+  if(!(tx.type==='SELL'&&tx.returned))addReverseToBatch(b,tx);
+  b.delete(dref('transactions',id));
+  commit(b);toast('Delete ho gaya ✓');
+}
+
+function renderAllLists(){
+  const h=document.getElementById('global-history-list');
+  if(h){
+    h.innerHTML=transactionHistory.length?transactionHistory.map(t=>{
+      let btns='';
+      if(t.type==='SELL'&&!t.returned&&can('Owner','Manager'))btns+=`<button class="warn-btn" data-id="${esc(t.id)}" onclick="returnSale(this.dataset.id)">Return</button>`;
+      if(can('Owner'))btns+=`<button class="del-btn" data-id="${esc(t.id)}" onclick="deleteTx(this.dataset.id)">Del</button>`;
+      return `<div class="list-item${ic('tx:'+t.id)}" style="border-left:3px solid ${esc(t.color)}"><div><span class="tag" style="background:${esc(t.color)}">${t.returned?'RETURNED':esc(t.type)}</span> <strong>${esc(t.itemName)}</strong><br><small>${esc(t.date)} (${esc(t.method||'Cash')})${t.customer?' · '+esc(t.customer):''}${t.discount?' · discount '+t.discount:''}${t.byName?' · '+esc(t.byName):''}</small></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><strong>Rs ${t.price}</strong><div style="display:flex;gap:6px">${btns}</div></div></div>`;
+    }).join(''):'<p style="color:var(--sub-text)">Abhi koi history nahi.</p>';
+  }
+  const p=document.getElementById('purchase-list');
+  if(p){
+    const ps=transactionHistory.filter(t=>t.type==='PURCHASE').slice(0,30);
+    p.innerHTML=ps.map(t=>`<div class="list-item${ic('pu:'+t.id)}"><div><strong>${esc(t.itemName)}</strong><br><small>${esc(t.date)}${t.supplier?' · '+esc(t.supplier):''}</small></div><strong>Rs ${t.price}</strong></div>`).join('');
+  }
+}
+
+/* ================= UDHAAR ================= */
+function addCustomer(){
+  const name=document.getElementById('cust-name').value.trim();
+  const phone=document.getElementById('cust-phone').value.trim();
+  if(!name)return alert('Naam likhein!');
+  if(customers[name])return alert('Ye customer pehle se hai!');
+  wr(fb.F.setDoc(dref('customers',newId('customers')),{name,phone,balance:0,log:[]}));
+  document.getElementById('cust-name').value='';document.getElementById('cust-phone').value='';
+  toast('Customer add ho gaya ✓');
+}
+function renderCustomers(){
+  const list=document.getElementById('customer-list');if(!list)return;
+  const names=Object.keys(customers).sort((a,b)=>(customers[b].balance||0)-(customers[a].balance||0));
+  list.innerHTML=names.length?names.map(n=>{
+    const c=customers[n],owes=c.balance>0;
+    return `<div class="list-item${ic('c:'+n)}"><div><strong>${esc(n)}</strong><br><small>${esc(c.phone||'Phone nahi')}</small></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+      <strong style="color:${owes?'#ef4444':'#4ade80'}">Rs ${fmt(c.balance)}</strong>
+      <div style="display:flex;gap:6px">
+      ${owes?`<button class="ok-btn" data-name="${esc(n)}" onclick="receiveUdhaar(this.dataset.name)">Payment</button>`:''}
+      ${c.phone&&owes?`<button class="edit-btn" data-name="${esc(n)}" onclick="remindUdhaar(this.dataset.name)">Yaad dihani</button>`:''}
+      ${can('Owner')&&!owes?`<button class="del-btn" data-name="${esc(n)}" onclick="deleteCustomer(this.dataset.name)">Del</button>`:''}
+      </div></div></div>`;
+  }).join(''):'<p style="color:var(--sub-text)">Koi customer nahi.</p>';
+}
+function receiveUdhaar(name){
+  const c=customers[name];if(!c)return;
+  const v=prompt(name+' ka baqi: Rs '+fmt(c.balance)+'\nKitni raqam mili?',c.balance);
+  if(v===null)return;
+  const amt=fmt(num(v));
+  if(amt<=0||amt>c.balance)return alert('Raqam sahi nahi (0 se zyada aur baqi se kam ho)!');
+  const day=dayKey(),b=newBatch();
+  b.update(dref('customers',c.id),{balance:inc(-amt),log:fb.F.arrayUnion({date:new Date().toLocaleString(),type:'PAYMENT',amount:-amt})});
+  b.set(dref('transactions',newId('transactions')),{type:'UDHAAR-PAID',day,ts:Date.now(),itemName:'Udhaar wasooli - '+name,price:amt,customer:name,color:'#a855f7',method:'Cash',date:new Date().toLocaleString(),returned:false,by:currentUid,byName:currentName});
+  b.set(dref('days',day),{recovered:inc(amt)},{merge:true});
+  commit(b);toast('Rs '+amt+' wasool ho gaye ✓');
+}
+function remindUdhaar(name){
+  const c=customers[name];if(!c||!c.phone)return;
+  let ph=c.phone.replace(/\D/g,'');if(ph.startsWith('0'))ph='92'+ph.slice(1);
+  const msg='Assalam o Alaikum '+name+', '+storeName+' ki taraf se yaad dehani: aap ka Rs '+fmt(c.balance)+' baqi hai. Shukriya.';
+  window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(msg),'_blank');
+}
+function deleteCustomer(name){
+  if(!can('Owner'))return;
+  const c=customers[name];if(!c)return;
+  if(!confirm(name+' ko delete karna hai?'))return;
+  wr(fb.F.deleteDoc(dref('customers',c.id)));
+}
+
+/* ================= REPORTS / BACKUP ================= */
+function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}
+function download(name,text,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();
+}
+function exportSalesCSV(){
+  let csv='ID,Type,Item,Price,Discount,Profit,Method,Customer,By,Date\n';
+  transactionHistory.forEach(t=>{
+    csv+=[t.id,t.returned?'RETURNED':t.type,t.itemName,t.price,t.discount||0,t.profit||0,t.method||'',t.customer||'',t.byName||'',t.date].map(csvCell).join(',')+'\n';
+  });
+  download('multishop_report_'+dayKey()+'.csv','﻿'+csv,'text/csv');
+  toast('Aakhri 200 transactions export hui');
+}
+function todayReportText(){
+  const t=getToday();
+  return `DAILY CLOSING REPORT (${storeName})\n${dayKey()}\n----------------------\nTransactions: ${t.count}\nCash: Rs ${fmt(t.cash)}\nOnline: Rs ${fmt(t.online)}\nUdhaar diya: Rs ${fmt(t.credit)}\nUdhaar wasool hua: Rs ${fmt(t.recovered)}\n----------------------\nTotal Sales: Rs ${fmt(t.sales)}\nPurchases: Rs ${fmt(t.purchases)}\nNet Profit: Rs ${fmt(t.profit)}\nUdhaar baqi (kul): Rs ${fmt(outstandingUdhaar())}`;
+}
+function showZReport(){alert(todayReportText())}
+function sendMail(){
+  const to=document.getElementById('mail-to').value.trim();
+  if(!to)return alert('Email address likhein!');
+  const sub=document.getElementById('mail-sub').value.trim()||('Daily Report - '+storeName+' - '+dayKey());
+  window.location.href='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(todayReportText());
+}
+function backupData(){
+  const data={exportedAt:new Date().toISOString(),storeName,
+    products:Object.values(inventoryStock),customers:Object.values(customers),transactions:transactionHistory,days:daysData};
+  download('multishop_backup_'+dayKey()+'.json',JSON.stringify(data,null,2),'application/json');
+}
+
+/* v2 (localStorage wale purane version) ki backup file cloud me import karna */
+function importOldBackup(ev){
+  if(!can('Owner'))return;
+  const f=ev.target.files[0];ev.target.value='';if(!f)return;
+  const r=new FileReader();
+  r.onload=async()=>{
+    let d;
+    try{d=JSON.parse(r.result);if(!d||typeof d!=='object'||!d.inventoryStock)throw 0}
+    catch(e){return alert('Ye purane backup ki sahi file nahi hai!')}
+    const inv=d.inventoryStock||{},cus=d.customers||{},arch=d.dailyArchive||{};
+    if(!confirm(Object.keys(inv).length+' products aur '+Object.keys(cus).length+' customers import honge.\nJin products ke naam pehle se hain unki qeemat/qty badal jayegi. Jari rakhein?'))return;
+    const ops=[];
+    for(const name in inv){
+      const it=inv[name],ex=inventoryStock[name],id=ex?ex.id:newId('products');
+      ops.push(b=>b.set(dref('products',id),{name,code:it.code||'',costPrice:num(it.costPrice),sellPrice:num(it.sellPrice),qty:Math.max(0,parseInt(it.qty)||0),low:(it.low==null||isNaN(it.low))?5:parseInt(it.low)}));
+    }
+    for(const name in cus){
+      const c=cus[name],ex=customers[name],id=ex?ex.id:newId('customers');
+      ops.push(b=>b.set(dref('customers',id),{name,phone:c.phone||'',balance:num(c.balance),log:[]}));
+    }
+    const dayOf=o=>({sales:num(o.sales),profit:num(o.profit),purchases:num(o.purchases)});
+    for(const k in arch){if(/^\d{4}-\d{2}-\d{2}$/.test(k))ops.push(b=>b.set(dref('days',k),dayOf(arch[k]),{merge:true}))}
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d.lastResetDate||''))ops.push(b=>b.set(dref('days',d.lastResetDate),dayOf({sales:d.sales,profit:d.profit,purchases:d.purchases}),{merge:true}));
+    toast('Import shuru... ('+ops.length+' records)');
+    try{
+      for(let i=0;i<ops.length;i+=400){const b=newBatch();ops.slice(i,i+400).forEach(o=>o(b));await b.commit()}
+      toast('Import mukammal ✓');
+    }catch(e){showErr(e)}
+  };
+  r.readAsText(f);
+}
+
+/* ================= STAFF ================= */
+async function addStaffMember(){
+  if(!can('Owner'))return alert('Sirf Owner staff bana sakta hai!');
+  const name=document.getElementById('staff-name').value.trim();
+  const email=document.getElementById('staff-email').value.trim().toLowerCase();
+  const password=document.getElementById('staff-password').value;
+  const role=document.getElementById('staff-role').value;
+  const phone=document.getElementById('staff-phone').value.trim();
+  if(!name||!email||!password)return alert('Naam, email aur password likhein!');
+  if(password.length<8)return alert('Password kam az kam 8 characters ka ho!');
+  if(!['Worker','Manager'].includes(role))return;
+  toast('Account ban raha hai...');
+  // dusri (secondary) app taake owner khud logout na ho jaye
+  const sec=fb.A.initializeApp(firebaseConfig,'sec'+Date.now());
+  const secAuth=fb.Au.getAuth(sec);
+  let uid=null;
+  try{
+    try{uid=(await fb.Au.createUserWithEmailAndPassword(secAuth,email,password)).user.uid}
+    catch(e){
+      if(e.code==='auth/email-already-in-use'){
+        try{uid=(await fb.Au.signInWithEmailAndPassword(secAuth,email,password)).user.uid}
+        catch(e2){alert('Ye email Firebase me pehle se hai (shayad purana hata hua staff) aur ye password us se match nahi karta. Wohi purana password likhein ya Firebase Console > Authentication se wo user delete karein.');return}
+      }else{alert(authErr(e));return}
+    }
+    await fb.F.setDoc(fb.F.doc(fb.db,'users',uid),{name,email,role,phone,ownerUid:currentUid,createdAt:Date.now()});
+    ['staff-name','staff-email','staff-password','staff-phone'].forEach(i=>document.getElementById(i).value='');
+    toast('Account ban gaya ✓');
+  }catch(e){showErr(e)}
+  finally{try{await fb.Au.signOut(secAuth)}catch(x){}try{await fb.A.deleteApp(sec)}catch(x){}}
+}
+function renderStaffList(){
+  const l=document.getElementById('staff-list');if(!l)return;
+  l.innerHTML=staffMembers.length?staffMembers.map(m=>`<div class="list-item${ic('st:'+m.uid)}"><div><strong>${esc(m.name)}</strong> <span class="tag" style="background:#f59e0b">${esc(m.role)}</span><br><small>${esc(m.email)}${m.phone?' · '+esc(m.phone):''}</small></div>
+    <button class="del-btn" data-uid="${esc(m.uid)}" data-email="${esc(m.email)}" onclick="deleteStaff(this.dataset.uid,this.dataset.email)">Delete</button></div>`).join(''):'<p style="color:var(--sub-text)">Abhi koi staff nahi.</p>';
+}
+function deleteStaff(uid,email){
+  if(!can('Owner'))return;
+  if(!confirm(email+' ka access khatam karna hai? Wo foran login nahi kar sakega.'))return;
+  wr(fb.F.deleteDoc(fb.F.doc(fb.db,'users',uid)));
+}
+</script>
+</body>
+</html>
